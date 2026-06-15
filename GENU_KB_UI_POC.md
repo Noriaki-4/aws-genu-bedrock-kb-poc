@@ -85,13 +85,81 @@ npm run cdk:diff -- --profile rag-poc-admin
 npm run cdk:deploy -- --profile rag-poc-admin
 ```
 
-Deployment takes about 20-30 minutes. On completion, the Amplify URL for the chat UI is shown in the CloudFormation stack outputs.
+Deployment takes about 20-30 minutes. On completion, the Chat UI URL is shown in `WebUrl` of the `GenerativeAiUseCasesStack` outputs.
 
-### 5. Sync Knowledge Base data source
+Get the URL via CLI:
 
-After deploy, go to AWS Console → Bedrock → Knowledge Bases → select the created KB → Data source → **Sync**.
+```bash
+aws cloudformation describe-stacks \
+  --stack-name GenerativeAiUseCasesStack \
+  --profile rag-poc-admin \
+  --query "Stacks[0].Outputs[?OutputKey=='WebUrl'].OutputValue" \
+  --output text
+```
 
-Sample documents are included in `packages/cdk/rag-docs/docs/`.
+### 5. Upload documents to S3
+
+Get the S3 bucket name:
+
+```bash
+aws cloudformation describe-stacks \
+  --stack-name RagKnowledgeBaseStack \
+  --profile rag-poc-admin \
+  --query "Stacks[0].Outputs[?contains(OutputKey,'Bucket')].OutputValue" \
+  --output text
+```
+
+Upload sample documents (included in the repo):
+
+```bash
+aws s3 cp packages/cdk/rag-docs/docs/ s3://<BUCKET_NAME>/ --recursive --profile rag-poc-admin
+```
+
+### 6. Sync Knowledge Base
+
+Get KB ID and Data Source ID:
+
+```bash
+aws bedrock-agent list-knowledge-bases \
+  --region ap-northeast-1 --profile rag-poc-admin \
+  --query "knowledgeBaseSummaries[].{ID:knowledgeBaseId,Name:name}" --output table
+
+aws bedrock-agent list-data-sources \
+  --knowledge-base-id <KB_ID> \
+  --region ap-northeast-1 --profile rag-poc-admin \
+  --query "dataSourceSummaries[?name=='s3-data-source'].{ID:dataSourceId}" --output table
+```
+
+Start sync:
+
+```bash
+aws bedrock-agent start-ingestion-job \
+  --knowledge-base-id <KB_ID> \
+  --data-source-id <DS_ID> \
+  --region ap-northeast-1 --profile rag-poc-admin \
+  --query "ingestionJob.{Status:status,JobId:ingestionJobId}" --output table
+```
+
+Check sync status:
+
+```bash
+aws bedrock-agent get-ingestion-job \
+  --knowledge-base-id <KB_ID> \
+  --data-source-id <DS_ID> \
+  --ingestion-job-id <JOB_ID> \
+  --region ap-northeast-1 --profile rag-poc-admin \
+  --query "ingestionJob.status" --output text
+```
+
+### 7. Verify RAG
+
+1. Open the Chat UI URL from Step 4
+2. Sign up or sign in (check spam folder if verification email is missing)
+3. Select **RAG チャット** from the left menu
+4. Ask a question about the uploaded documents, e.g.:
+   - `Amazon Bedrock とは何ですか？`
+   - `Knowledge Base の仕組みを説明してください。`
+5. Confirm the response includes source citations from the documents
 
 ## Teardown
 
