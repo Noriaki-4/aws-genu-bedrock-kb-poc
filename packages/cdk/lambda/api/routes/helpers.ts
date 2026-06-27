@@ -24,6 +24,7 @@ export const wrapHandler =
     pathParamsFn?: (req: Request) => Record<string, string>
   ) =>
   async (req: Request, res: Response) => {
+    const span = req.langfuseTrace?.span({ name: `${req.method} ${req.path}` });
     try {
       const event = createEvent(
         req,
@@ -38,6 +39,8 @@ export const wrapHandler =
         }
       }
 
+      span?.end({ output: { statusCode: result.statusCode } });
+
       if (result.statusCode === 204 || !result.body) {
         res.status(result.statusCode).send();
       } else {
@@ -46,6 +49,10 @@ export const wrapHandler =
       }
     } catch (error) {
       console.error('Handler error:', error);
+      span?.end({
+        level: 'ERROR',
+        statusMessage: error instanceof Error ? error.message : String(error),
+      });
       res.status(500).json({ error: 'Internal server error' });
     }
   };

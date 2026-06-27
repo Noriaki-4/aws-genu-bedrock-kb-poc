@@ -174,6 +174,11 @@ const baseStackInputSchema = z.object({
   researchAgentTavilyApiKey: z.string().default(''),
   // MCP
   mcpEnabled: z.boolean().default(false),
+  // Langfuse
+  langfuseEnabled: z.boolean().default(false),
+  langfuseHost: z.string().nullish(),
+  langfusePublicKey: z.string().nullish(),
+  langfuseSecretKey: z.string().nullish(),
   // Guardrail
   guardrailEnabled: z.boolean().default(false),
   // Usecase builder
@@ -226,6 +231,25 @@ export const stackInputSchema = baseStackInputSchema
     {
       message: 'searchEngine is required when searchApiKey is provided',
       path: ['searchEngine'],
+    }
+  )
+  .refine(
+    (data) => {
+      // If langfuseEnabled is true, host/publicKey/secretKey must all be set
+      if (
+        data.langfuseEnabled &&
+        (!data.langfuseHost ||
+          !data.langfusePublicKey ||
+          !data.langfuseSecretKey)
+      ) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message:
+        'langfuseHost, langfusePublicKey, and langfuseSecretKey are required when langfuseEnabled is true',
+      path: ['langfuseEnabled'],
     }
   )
   .refine(

@@ -242,6 +242,11 @@ export class GenerativeAiUseCasesStack extends Stack {
       // Transcribe
       audioBucket: transcribe.audioBucket,
       transcriptBucket: transcribe.transcriptBucket,
+      // Langfuse
+      langfuseEnabled: params.langfuseEnabled,
+      langfuseHost: params.langfuseHost,
+      langfusePublicKey: params.langfusePublicKey,
+      langfuseSecretKey: params.langfuseSecretKey,
       // Speech to Speech
       speechToSpeechTaskFunctionArn:
         speechToSpeech.speechToSpeechTaskFunctionArn,

@@ -87,6 +87,11 @@ export interface BackendApiProps {
   readonly additionalS3Buckets?: Bucket[];
   // CORS
   readonly webUrl?: string;
+  // Langfuse
+  readonly langfuseEnabled?: boolean;
+  readonly langfuseHost?: string | null;
+  readonly langfusePublicKey?: string | null;
+  readonly langfuseSecretKey?: string | null;
 }
 
 export class Api extends Construct {
@@ -257,6 +262,15 @@ export class Api extends Construct {
           : {}),
         // CORS allowed origins
         ALLOWED_ORIGINS: props.webUrl || '*',
+        // Langfuse
+        ...(props.langfuseEnabled
+          ? {
+              LANGFUSE_ENABLED: 'true',
+              LANGFUSE_HOST: props.langfuseHost ?? '',
+              LANGFUSE_PUBLIC_KEY: props.langfusePublicKey ?? '',
+              LANGFUSE_SECRET_KEY: props.langfuseSecretKey ?? '',
+            }
+          : {}),
       },
       vpc,
       securityGroups,

@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import { langfuse } from './langfuse';
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -88,6 +89,14 @@ app.use(
 );
 
 app.use(express.json({ limit: '10mb' }));
+
+// Langfuse: create one trace per request, used by wrapHandler() for spans
+app.use((req, _res, next) => {
+  if (langfuse) {
+    req.langfuseTrace = langfuse.trace({ name: `${req.method} ${req.path}` });
+  }
+  next();
+});
 
 // Import route handlers
 import { router as predictRouter } from './routes/predict';
