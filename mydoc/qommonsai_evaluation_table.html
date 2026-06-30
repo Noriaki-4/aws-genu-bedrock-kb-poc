@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QommonsAI 機能整理表</title>
+<style>
+    :root {
+        --bg: #f6f8fb;
+        --card: #ffffff;
+        --text: #17202a;
+        --muted: #5f6b7a;
+        --line: #d8dee8;
+        --head: #253044;
+        --head-text: #ffffff;
+        --easy-bg: #e7f6ed;
+        --easy-text: #116b37;
+        --cond-bg: #fff3d6;
+        --cond-text: #8a5a00;
+        --hard-bg: #fde8e8;
+        --hard-text: #a12a2a;
+        --none-bg: #eef1f5;
+        --none-text: #596273;
+    }
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif;
+        color: var(--text);
+        background: linear-gradient(180deg, #eef3f9 0%, var(--bg) 240px);
+        line-height: 1.6;
+    }
+    .page {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 32px 24px 48px;
+    }
+    header {
+        margin-bottom: 20px;
+    }
+    h1 {
+        margin: 0 0 8px;
+        font-size: 28px;
+        line-height: 1.3;
+        letter-spacing: .02em;
+    }
+    .subtitle {
+        margin: 0;
+        color: var(--muted);
+        font-size: 15px;
+    }
+    .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: 0 10px 28px rgba(32, 48, 70, 0.08);
+        overflow: hidden;
+    }
+    .table-wrap {
+        overflow-x: auto;
+    }
+    table {
+        width: 100%;
+        min-width: 1100px;
+        border-collapse: separate;
+        border-spacing: 0;
+        table-layout: fixed;
+    }
+    colgroup col:nth-child(1) { width: 15%; }
+    colgroup col:nth-child(2) { width: 25%; }
+    colgroup col:nth-child(3) { width: 27%; }
+    colgroup col:nth-child(4) { width: 22%; }
+    colgroup col:nth-child(5) { width: 11%; }
+    thead th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: var(--head);
+        color: var(--head-text);
+        padding: 14px 14px;
+        text-align: left;
+        font-size: 14px;
+        font-weight: 700;
+        border-right: 1px solid rgba(255,255,255,.16);
+        white-space: nowrap;
+    }
+    thead th:last-child { border-right: none; }
+    tbody td {
+        vertical-align: top;
+        padding: 15px 14px;
+        border-right: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        font-size: 14px;
+        word-break: normal;
+        overflow-wrap: anywhere;
+    }
+    tbody tr:nth-child(even) td {
+        background: #fbfcfe;
+    }
+    tbody tr:hover td {
+        background: #f3f7fc;
+    }
+    tbody td:last-child { border-right: none; }
+    tbody tr:last-child td { border-bottom: none; }
+    .target {
+        font-weight: 700;
+        color: #1f2b3a;
+    }
+    .status {
+        text-align: center;
+        vertical-align: middle;
+    }
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 7.5em;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 12px;
+        line-height: 1.3;
+        white-space: nowrap;
+    }
+    .easy { background: var(--easy-bg); color: var(--easy-text); }
+    .conditional { background: var(--cond-bg); color: var(--cond-text); }
+    .hard { background: var(--hard-bg); color: var(--hard-text); }
+    .none { background: var(--none-bg); color: var(--none-text); }
+    .legend {
+        margin-top: 18px;
+        padding: 18px 20px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+    }
+    .legend h2 {
+        margin: 0 0 12px;
+        font-size: 16px;
+    }
+    .legend-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px 16px;
+    }
+    .legend-item {
+        display: grid;
+        grid-template-columns: 9em 1fr;
+        gap: 10px;
+        align-items: start;
+        color: var(--muted);
+        font-size: 13px;
+    }
+    .note {
+        margin-top: 16px;
+        color: var(--muted);
+        font-size: 13px;
+    }
+    @media (max-width: 760px) {
+        .page { padding: 20px 12px 32px; }
+        h1 { font-size: 22px; }
+        .legend-grid { grid-template-columns: 1fr; }
+        .legend-item { grid-template-columns: 8.5em 1fr; }
+    }
+    @media print {
+        body { background: #fff; }
+        .page { max-width: none; padding: 12mm; }
+        .card, .legend { box-shadow: none; border-color: #bbb; }
+        thead th { position: static; }
+        table { min-width: 0; font-size: 10px; }
+        tbody td, thead th { padding: 7px 8px; font-size: 10px; }
+        .badge { font-size: 9px; min-width: 0; white-space: normal; }
+    }
+</style>
+</head>
+<body>
+<div class="page">
+    <header>
+        <h1>QommonsAI 機能・ユーザー体験整理表</h1>
+        <p class="subtitle">自治体職員のユーザー体験を起点に、機能・利用データ・閉域網での成立性を一枚で整理。</p>
+    </header>
+
+    <section class="card">
+        <div class="table-wrap">
+            <table aria-label="QommonsAI 機能整理表">
+                <colgroup>
+                    <col><col><col><col><col>
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>評価対象</th>
+                        <th>ユーザー体験</th>
+                        <th>機能</th>
+                        <th>利用データ</th>
+                        <th>閉域網での成立性</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+        <td class="target">文書作成</td>
+        <td>通知文、案内文、庁内文書、住民向け文書の下書きを作れる</td>
+        <td>チャット、文案作成、モデル切替、テンプレート利用</td>
+        <td>ユーザー入力、過去文書、自庁文書</td>
+        <td class="status"><span class="badge easy">成立しやすい</span></td>
+    </tr>
+<tr>
+        <td class="target">FAQ・住民対応</td>
+        <td>住民向けの回答案、説明文、FAQを作れる</td>
+        <td>FAQ支援、文書作成、ナレッジ検索</td>
+        <td>FAQ、制度資料、条例、要綱、自庁文書</td>
+        <td class="status"><span class="badge easy">成立しやすい</span></td>
+    </tr>
+<tr>
+        <td class="target">プライベートナレッジ</td>
+        <td>庁内文書をAIで検索・要約・回答に使える</td>
+        <td>RAG、ファイル登録、フォルダ管理、権限管理</td>
+        <td>庁内文書、規程、要綱、マニュアル、FAQ</td>
+        <td class="status"><span class="badge easy">成立しやすい</span></td>
+    </tr>
+<tr>
+        <td class="target">議会答弁</td>
+        <td>過去答弁や他自治体事例を参考に答弁案を作れる</td>
+        <td>議会対応AI、議会議事録検索、行政ナレッジ検索</td>
+        <td>議会議事録、過去答弁、他自治体資料</td>
+        <td class="status"><span class="badge conditional">条件付きで成立</span></td>
+    </tr>
+<tr>
+        <td class="target">法令検索 / LawChunker</td>
+        <td>法令・条例の根拠を条文構造を踏まえて確認できる</td>
+        <td>法令XMLの階層構造を考慮した可変長チャンキング、法令RAG、条・項・号を踏まえた検索</td>
+        <td>法令XML、条例、規則、要綱</td>
+        <td class="status"><span class="badge conditional">条件付きで成立</span></td>
+    </tr>
+<tr>
+        <td class="target">行政ナレッジ検索</td>
+        <td>他自治体事例、国の通知、政策文書、議会論点を探せる</td>
+        <td>全国行政文書検索、議会議事録検索、出典付き回答</td>
+        <td>中央省庁資料、都道府県・市区町村の公開行政文書、議会議事録</td>
+        <td class="status"><span class="badge hard">成立に課題あり</span></td>
+    </tr>
+<tr>
+        <td class="target">統合検索 / Deep Research</td>
+        <td>自庁文書、行政ナレッジ、法令、Webを横断して調査・レポート化できる</td>
+        <td>横断検索、検索先ルーティング、問いの分解、再検索、自動レポート生成、出典提示</td>
+        <td>自庁文書、全国行政文書、法令、Web情報、政策資料</td>
+        <td class="status"><span class="badge hard">成立に課題あり</span></td>
+    </tr>
+<tr>
+        <td class="target">ファイル活用</td>
+        <td>PDF、Word、Excel、PowerPointを読み込ませて要約・QAできる</td>
+        <td>ファイルアップロード、文書解析、要約、QA</td>
+        <td>添付ファイル、庁内資料、会議資料</td>
+        <td class="status"><span class="badge none">－</span></td>
+    </tr>
+<tr>
+        <td class="target">管理・統制</td>
+        <td>全庁展開時にユーザー、部署、モデル、利用状況を管理できる</td>
+        <td>ユーザー管理、部署管理、モデル制限、職員番号、ログ、レポート</td>
+        <td>ユーザー情報、部署情報、利用ログ</td>
+        <td class="status"><span class="badge none">－</span></td>
+    </tr>
+<tr>
+        <td class="target">導入・定着支援</td>
+        <td>職員が研修やマニュアルを通じて使い方を学べる</td>
+        <td>研修、FAQ、サポート、活用事例、お知らせ</td>
+        <td>研修資料、FAQ、利用事例</td>
+        <td class="status"><span class="badge none">－</span></td>
+    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="legend" aria-label="判定の意味">
+        <h2>判定の意味</h2>
+        <div class="legend-grid">
+            <div class="legend-item">
+        <span class="badge easy">成立しやすい</span>
+        <span>閉域内LLM、自庁データ、事前登録データで体験を作りやすい</span>
+    </div>
+<div class="legend-item">
+        <span class="badge conditional">条件付きで成立</span>
+        <span>必要データを閉域内に持ち込めば成立するが、同期・構造化・更新運用が必要</span>
+    </div>
+<div class="legend-item">
+        <span class="badge hard">成立に課題あり</span>
+        <span>Web検索、外部行政文書、原本URL、最新情報への依存が大きい</span>
+    </div>
+<div class="legend-item">
+        <span class="badge none">－</span>
+        <span>本表では閉域網成立性の主評価対象外。ただし個別確認は必要</span>
+    </div>
+        </div>
+        <p class="note">「－」は閉域網で不要という意味ではなく、本表では主評価対象外として扱う項目です。</p>
+    </section>
+</div>
+</body>
+</html>
