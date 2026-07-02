@@ -91,9 +91,17 @@ app.use(
 app.use(express.json({ limit: '10mb' }));
 
 // Langfuse: create one trace per request, used by wrapHandler() for spans
-app.use((req, _res, next) => {
-  if (langfuse) {
-    req.langfuseTrace = langfuse.trace({ name: `${req.method} ${req.path}` });
+app.use((req, res, next) => {
+  const langfuseClient = langfuse;
+  if (langfuseClient) {
+    req.langfuseTrace = langfuseClient.trace({
+      name: `${req.method} ${req.path}`,
+    });
+    res.on('finish', () => {
+      langfuseClient.flushAsync().catch((error) => {
+        console.error('Failed to flush Langfuse events:', error);
+      });
+    });
   }
   next();
 });
