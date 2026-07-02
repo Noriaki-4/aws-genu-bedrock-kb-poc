@@ -124,18 +124,21 @@ export type PredictTitleResponse = string;
 
 export type QueryKendraRequest = {
   query: string;
+  id?: string;
 };
 
 export type QueryKendraResponse = QueryCommandOutput;
 
 export type RetrieveKendraRequest = {
   query: string;
+  id?: string;
 };
 
 export type RetrieveKendraResponse = RetrieveCommandOutput;
 
 export type RetrieveKnowledgeBaseRequest = {
   query: string;
+  id?: string;
 };
 
 export type RetrieveKnowledgeBaseResponse = RetrieveCommandOutputKnowledgeBase;

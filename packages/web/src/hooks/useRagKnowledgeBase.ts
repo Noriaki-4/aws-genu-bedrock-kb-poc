@@ -69,7 +69,7 @@ const useRagKnowledgeBase = (id: string) => {
       let retrievedItems = null;
 
       try {
-        retrievedItems = await retrieve(content);
+        retrievedItems = await retrieve(content, id);
       } catch (e) {
         console.error(e);
         popMessage();

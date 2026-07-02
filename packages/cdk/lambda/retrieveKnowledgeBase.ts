@@ -2,6 +2,11 @@ import * as lambda from 'aws-lambda';
 import { RetrieveCommand } from '@aws-sdk/client-bedrock-agent-runtime';
 import { RetrieveKnowledgeBaseRequest } from 'generative-ai-use-cases';
 import { initBedrockAgentRuntimeClient } from './utils/bedrockClient';
+import {
+  flushLangfuse,
+  getLangfuseTraceFromEvent,
+  truncateForLangfuse,
+} from './utils/langfuse';
 
 const KNOWLEDGE_BASE_ID = process.env.KNOWLEDGE_BASE_ID;
 const MODEL_REGION = process.env.MODEL_REGION as string;
@@ -34,14 +39,56 @@ export const handler = async (
       },
     },
   });
-  const retrieveRes = await client.send(retrieveCommand);
-
-  return {
-    statusCode: 200,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
+  const trace = getLangfuseTraceFromEvent(event);
+  trace?.update({
+    sessionId: req.id,
+    input: { query },
+    metadata: {
+      provider: 'bedrock-knowledge-base',
+      operation: 'retrieve',
+      knowledgeBaseId: KNOWLEDGE_BASE_ID,
     },
-    body: JSON.stringify(retrieveRes),
-  };
+    tags: ['rag', 'retrieval'],
+  });
+  const span = trace?.span({
+    name: 'knowledge-base retrieve',
+    input: { query },
+    metadata: {
+      provider: 'bedrock-knowledge-base',
+      operation: 'retrieve',
+      knowledgeBaseId: KNOWLEDGE_BASE_ID,
+    },
+  });
+
+  try {
+    const retrieveRes = await client.send(retrieveCommand);
+    span?.end({
+      output: {
+        resultCount: retrieveRes.retrievalResults?.length ?? 0,
+        results: retrieveRes.retrievalResults?.slice(0, 10).map((item) => ({
+          score: item.score,
+          location: item.location,
+          content: truncateForLangfuse(item.content?.text, 1000),
+          metadata: item.metadata,
+        })),
+      },
+    });
+
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      },
+      body: JSON.stringify(retrieveRes),
+    };
+  } catch (error) {
+    span?.end({
+      level: 'ERROR',
+      statusMessage: error instanceof Error ? error.message : String(error),
+    });
+    throw error;
+  } finally {
+    await flushLangfuse();
+  }
 };

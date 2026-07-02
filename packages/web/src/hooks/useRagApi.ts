@@ -9,16 +9,18 @@ import useHttp from './useHttp';
 const useRagApi = () => {
   const http = useHttp();
   return {
-    query: (query: string) => {
+    query: (query: string, id?: string) => {
       return http.post<QueryKendraResponse, QueryKendraRequest>('/rag/query', {
         query,
+        id,
       });
     },
-    retrieve: (query: string) => {
+    retrieve: (query: string, id?: string) => {
       return http.post<RetrieveKendraResponse, RetrieveKendraRequest>(
         '/rag/retrieve',
         {
           query,
+          id,
         }
       );
     },

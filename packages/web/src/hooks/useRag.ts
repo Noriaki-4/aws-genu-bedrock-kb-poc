@@ -101,7 +101,7 @@ const useRag = (id: string) => {
       // Retrieve reference documents from Kendra and set them as the system prompt
       let items: RetrieveResultItem[] = [];
       try {
-        const retrievedItems = await retrieve(query);
+        const retrievedItems = await retrieve(query, id);
         items = arrangeItems(retrievedItems.data.ResultItems ?? []);
       } catch (error) {
         popMessage();

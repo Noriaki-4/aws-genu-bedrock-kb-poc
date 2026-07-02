@@ -16,6 +16,7 @@ import {
   BedrockImageGenerationResponse,
   GenerateImageParams,
   GenerateVideoParams,
+  Metadata,
   Model,
   StreamingChunk,
   UnrecordedMessage,
@@ -27,6 +28,14 @@ import {
 } from './models';
 import { streamingChunk } from './streamingChunk';
 import { initBedrockRuntimeClient } from './bedrockClient';
+import {
+  flushLangfuse,
+  langfuse,
+  modelParametersForLangfuse,
+  sanitizeMessagesForLangfuse,
+  truncateForLangfuse,
+  usageDetailsForLangfuse,
+} from './langfuse';
 
 const MODEL_REGION = process.env.MODEL_REGION as string;
 
@@ -98,20 +107,88 @@ const bedrockApi: Omit<ApiInterface, 'invokeFlow'> = {
   invoke: async (model, messages, id) => {
     const region = model.region || MODEL_REGION;
     const client = await initBedrockRuntimeClient({ region });
+    const trace = langfuse?.trace({
+      name: 'chat completion',
+      sessionId: id,
+      input: sanitizeMessagesForLangfuse(messages),
+      metadata: {
+        modelType: model.type,
+        modelId: model.modelId,
+        region,
+        streaming: false,
+      },
+      tags: ['chat'],
+    });
+    const generation = trace?.generation({
+      name: 'bedrock converse',
+      model: model.modelId,
+      modelParameters: modelParametersForLangfuse(model.modelParameters),
+      input: sanitizeMessagesForLangfuse(messages),
+      metadata: {
+        sessionId: id,
+        region,
+        streaming: false,
+      },
+    });
 
-    const converseCommandInput = createConverseCommandInput(
-      model,
-      messages,
-      id
-    );
-    const command = new ConverseCommand(converseCommandInput);
-    const output = await client.send(command);
+    try {
+      const converseCommandInput = createConverseCommandInput(
+        model,
+        messages,
+        id
+      );
+      const command = new ConverseCommand(converseCommandInput);
+      const output = await client.send(command);
+      const extractedOutput = extractConverseOutput(model, output);
 
-    return extractConverseOutput(model, output).text;
+      generation?.end({
+        output: truncateForLangfuse(extractedOutput.text),
+        usageDetails: usageDetailsForLangfuse(extractedOutput.metadata?.usage),
+      });
+
+      return extractedOutput.text;
+    } catch (error) {
+      generation?.end({
+        level: 'ERROR',
+        statusMessage: error instanceof Error ? error.message : String(error),
+      });
+      throw error;
+    } finally {
+      await flushLangfuse();
+    }
   },
   invokeStream: async function* (model, messages, id) {
     const region = model.region || MODEL_REGION;
     const client = await initBedrockRuntimeClient({ region });
+    const trace = langfuse?.trace({
+      name: 'chat completion stream',
+      sessionId: id,
+      input: sanitizeMessagesForLangfuse(messages),
+      metadata: {
+        modelType: model.type,
+        modelId: model.modelId,
+        region,
+        streaming: true,
+      },
+      tags: ['chat'],
+    });
+    const generation = trace?.generation({
+      name: 'bedrock converse stream',
+      model: model.modelId,
+      modelParameters: modelParametersForLangfuse(model.modelParameters),
+      input: sanitizeMessagesForLangfuse(messages),
+      metadata: {
+        sessionId: id,
+        region,
+        streaming: true,
+      },
+    });
+    let responseText = '';
+    let reasoningText = '';
+    let usage: Metadata['usage'] | undefined;
+    let stopReason: string | undefined;
+    let errorCode: string | undefined;
+
     try {
       const converseStreamCommandInput = createConverseStreamCommandInput(
         model,
@@ -133,6 +210,15 @@ const bedrockApi: Omit<ApiInterface, 'invokeFlow'> = {
         }
 
         const output = extractConverseStreamOutput(model, response);
+        if (output.text) {
+          responseText += output.text;
+        }
+        if (output.trace) {
+          reasoningText += output.trace;
+        }
+        if (output.metadata?.usage) {
+          usage = output.metadata.usage;
+        }
 
         if (output.text || output.trace || output.metadata) {
           yield streamingChunk({
@@ -143,6 +229,7 @@ const bedrockApi: Omit<ApiInterface, 'invokeFlow'> = {
         }
 
         if (response.messageStop) {
+          stopReason = response.messageStop.stopReason;
           yield streamingChunk({
             text: '',
             stopReason: response.messageStop.stopReason,
@@ -161,19 +248,40 @@ const bedrockApi: Omit<ApiInterface, 'invokeFlow'> = {
           stopReason: 'error',
           errorCode: 'THROTTLING',
         });
+        errorCode = 'THROTTLING';
       } else if (e instanceof AccessDeniedException) {
         yield streamingChunk({
           text: '',
           stopReason: 'error',
           errorCode: 'ACCESS_DENIED',
         });
+        errorCode = 'ACCESS_DENIED';
       } else {
         yield streamingChunk({
           text: '',
           stopReason: 'error',
           errorCode: 'UNKNOWN_ERROR',
         });
+        errorCode = 'UNKNOWN_ERROR';
       }
+    } finally {
+      generation?.end({
+        output: truncateForLangfuse(responseText),
+        usageDetails: usageDetailsForLangfuse(usage),
+        metadata: {
+          stopReason,
+          errorCode,
+          reasoning:
+            reasoningText.length > 0 ? truncateForLangfuse(reasoningText) : '',
+        },
+        ...(errorCode
+          ? {
+              level: 'ERROR' as const,
+              statusMessage: errorCode,
+            }
+          : {}),
+      });
+      await flushLangfuse();
     }
   },
   generateImage: async (model, params) => {

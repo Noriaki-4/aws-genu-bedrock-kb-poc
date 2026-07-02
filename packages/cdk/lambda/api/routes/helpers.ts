@@ -29,7 +29,8 @@ export const wrapHandler =
       const event = createEvent(
         req,
         pathParamsFn?.(req) ?? {}
-      ) as APIGatewayProxyEvent;
+      ) as APIGatewayProxyEvent & { langfuseTrace?: typeof req.langfuseTrace };
+      event.langfuseTrace = req.langfuseTrace;
 
       const result = await handler(event);
 
