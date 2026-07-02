@@ -21,14 +21,17 @@
 
 `systemContexts` オブジェクトにルートパスをキーとして追加する。
 
+**注意:** `claude.ts` に日本語のシステムプロンプトを直接書くと、commit hook の `npm run lint` で `i18nhelper/no-jp-string` warning が発生し、`--max-warnings 0` により commit が失敗する。システムプロンプトは英語で書き、回答言語は `Automatically detect the language...` のような指示で制御する。
+
 ```typescript
 // packages/web/src/prompts/claude.ts
 const systemContexts: { [key: string]: string } = {
   '/chat': `...`,
 
   // ここに追加（例: data-analyst）
-  '/data-analyst': `あなたはデータ分析・可視化アシスタントです。
-提供されたデータをそのまま読み取り、集計・計算はすべて自分で行ってください。
+  '/data-analyst': `You are a data analysis and visualization assistant.
+Read the provided data directly and perform all aggregation and calculations yourself.
+Automatically detect the language of the user's request and think and answer in the same language.
 ...`,
 
   '/summarize': `...`,
@@ -103,7 +106,8 @@ const myAgent = new CfnAgent(this, 'MyAgent', {
   foundationModel: props.foundationModel,
   idleSessionTtlInSeconds: 3600,
   autoPrepare: true,
-  instruction: `エージェントへの指示（システムプロンプト）をここに書く。`,
+  instruction: `Write the agent instruction (system prompt) here.
+Automatically detect the language of the user's request and think and answer in the same language.`,
 
   // action group が必要な場合
   actionGroups: [
