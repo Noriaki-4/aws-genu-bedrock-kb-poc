@@ -101,6 +101,10 @@ const routes: RouteObject[] = [
     path: '/share/:shareId',
     element: <SharedChatPage />,
   },
+  {
+    path: '/data-analyst',
+    element: <ChatPage />,
+  },
   enabled('generate')
     ? {
         path: '/generate',

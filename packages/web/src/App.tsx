@@ -24,6 +24,7 @@ import {
   PiNotebook,
   PiGraph,
   PiMagnifyingGlass,
+  PiChartLineUp,
 } from 'react-icons/pi';
 import { Outlet } from 'react-router-dom';
 import Drawer, { ItemProps } from './components/Drawer';
@@ -188,6 +189,12 @@ const App: React.FC = () => {
           display: 'usecase' as const,
         }
       : null,
+    {
+      label: t('navigation.dataAnalyst'),
+      to: '/data-analyst',
+      icon: <PiChartLineUp />,
+      display: 'usecase' as const,
+    },
     enabled('generate')
       ? {
           label: t('navigation.textGeneration'),

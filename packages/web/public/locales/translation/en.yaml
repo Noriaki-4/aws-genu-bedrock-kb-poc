@@ -927,6 +927,7 @@ model:
 navigation:
   agentChat: Agent Chat
   chat: Chat
+  dataAnalyst: Data Analyst
   diagramGeneration: Diagram Generation
   flowChat: Flow Chat
   home: Home
