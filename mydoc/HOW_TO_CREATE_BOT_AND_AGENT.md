@@ -1,5 +1,7 @@
 # GenU ボット・エージェント作成ガイド
 
+AgentCore Runtime を別リポジトリで作成し、genU から呼び出す場合は、[genU から外部 AgentCore Runtime を呼び出す方法](./EXTERNAL_AGENTCORE_INTEGRATION.md) を参照する。
+
 ## 使い分け
 
 | 方式           | ファイル                              | tool use | 用途                                |
