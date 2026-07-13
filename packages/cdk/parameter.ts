@@ -23,6 +23,21 @@ const envs: Record<string, Partial<StackInput>> = {
   // },
   dev: {
     // Parameters for development environment
+    agentCoreRegion: 'ap-northeast-1',
+
+    agentCoreExternalRuntimes: [
+      {
+        name: 'BedrockAgent_BedrockAgent',
+        // eslint-disable-next-line i18nhelper/no-jp-string
+        display_name: '別戸六区 英慈円斗',
+        // eslint-disable-next-line i18nhelper/no-jp-string
+        description: '自分の名前を回答するサンプルエージェントです。',
+        arn: 'arn:aws:bedrock-agentcore:ap-northeast-1:035351467732:runtime/BedrockAgent_BedrockAgent-052O95DjiR',
+      },
+    ],
+
+    agentBuilderEnabled: false,
+    createGenericAgentCoreRuntime: false,
   },
   staging: {
     // Parameters for staging environment
