@@ -75,6 +75,17 @@
         "description": "Web search and research capabilities powered by Tavily"
       }
     },
+    "manual-kb-gateway": {
+      "command": "uvx",
+      "args": [
+        "mcp-proxy-for-aws",
+        "https://sample-manual-gw-s08lru8q3m.gateway.bedrock-agentcore.ap-northeast-1.amazonaws.com/mcp"
+      ],
+      "metadata": {
+        "category": "AWS",
+        "description": "Searches the staff manual through the AgentCore Gateway's Knowledge Base connector"
+      }
+    },
     "tavily-gateway": {
       "command": "uvx",
       "args": [

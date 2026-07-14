@@ -53,7 +53,16 @@ const envs: Record<string, Partial<StackInput>> = {
       },
     ],
 
-    agentBuilderEnabled: false,
+    // Agent Builder runs GenU's own AgentCore runtime. It has no built-in
+    // Knowledge Base tool, so it reaches the KB through the AgentCore Gateway,
+    // proxied by mcp-proxy-for-aws (see mcp-configs/agent-builder/mcp.json).
+    // Listing the gateway ARN here scopes the runtime's InvokeGateway permission
+    // to it instead of granting '*'.
+    agentBuilderEnabled: true,
+    agentCoreGatewayArns: [
+      'arn:aws:bedrock-agentcore:ap-northeast-1:035351467732:gateway/sample-manual-gw-s08lru8q3m',
+    ],
+
     createGenericAgentCoreRuntime: false,
   },
   staging: {
