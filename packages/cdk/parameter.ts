@@ -23,6 +23,23 @@ const envs: Record<string, Partial<StackInput>> = {
   // },
   dev: {
     // Parameters for development environment
+
+    // Defining an env block makes cdk.json's context ignored, so every value we
+    // rely on has to be set here explicitly. The Knowledge Base lives in
+    // ap-northeast-1, and the RAG retrieve Lambda queries it in modelRegion,
+    // so the two must match (the schema default is us-east-1).
+    modelRegion: 'ap-northeast-1',
+
+    // Reuse an existing Bedrock Knowledge Base instead of letting GenU create one.
+    // Passing ragKnowledgeBaseId skips RagKnowledgeBaseStack, so no OpenSearch
+    // Serverless collection is provisioned.
+    //
+    // This KB is backed by S3 Vectors. It has to be a VECTOR-type KB: a MANAGED
+    // (fully managed) KB exposes no vector store, and Bedrock rejects both of the
+    // calls GenU makes against it.
+    ragKnowledgeBaseEnabled: true,
+    ragKnowledgeBaseId: 'HO8P6XRCIE',
+
     agentCoreRegion: 'ap-northeast-1',
 
     agentCoreExternalRuntimes: [
