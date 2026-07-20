@@ -25,6 +25,7 @@ import {
   PiGraph,
   PiMagnifyingGlass,
   PiChartLineUp,
+  PiDatabase,
 } from 'react-icons/pi';
 import { Outlet } from 'react-router-dom';
 import Drawer, { ItemProps } from './components/Drawer';
@@ -52,6 +53,8 @@ const agentBuilderEnabled: boolean =
   import.meta.env.VITE_APP_AGENT_CORE_AGENT_BUILDER_ENABLED === 'true';
 const researchAgentEnabled: boolean =
   import.meta.env.VITE_APP_RESEARCH_AGENT_ENABLED === 'true';
+const sqlTemplateAssistantEnabled: boolean =
+  import.meta.env.VITE_APP_SQL_TEMPLATE_ASSISTANT_ENABLED === 'true';
 
 const {
   visionEnabled,
@@ -100,6 +103,14 @@ const App: React.FC = () => {
       icon: <PiChatsCircle />,
       display: 'usecase' as const,
     },
+    sqlTemplateAssistantEnabled
+      ? {
+          label: t('sql_template.title'),
+          to: '/sql-template-assistant',
+          icon: <PiDatabase />,
+          display: 'usecase' as const,
+        }
+      : null,
     ragEnabled
       ? {
           label: t('navigation.ragChat'),

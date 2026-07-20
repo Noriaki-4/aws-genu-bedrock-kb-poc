@@ -622,6 +622,26 @@ sketch:
   clear: 清除
   pen_size: 笔尺寸
   upload_image: 上传图像
+sql_template:
+  another_template: Choose another template
+  change_template: Change template
+  choose_prompt: Choose the SQL template you want to use.
+  download_csv: Download CSV
+  execute: Run
+  execute_error: Could not load the mock result.
+  execute_prompt: Do you want to run this SQL?
+  generate: Generate SQL
+  generated: Your SQL is ready.
+  input_prompt: Enter the values required to create the SQL.
+  load_error: Could not load the SQL templates.
+  mock_notice: A mock result is shown because database access is not enabled yet.
+  mock_result: Result
+  render_error: Could not generate the SQL.
+  retry: Retry
+  same_template: Use the same template again
+  search_placeholder: Search by name, category, or tag
+  select_placeholder: Select an option
+  title: SQL Creation Assistant
 summarize:
   additional_context: 附加上下文
   additional_context_placeholder: 您可以输入希望额外考虑的点（如随意程度等）

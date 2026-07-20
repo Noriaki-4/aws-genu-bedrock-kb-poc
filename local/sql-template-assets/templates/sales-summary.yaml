@@ -1,0 +1,46 @@
+schemaVersion: 1
+id: sales-summary
+version: '1.0.0'
+title: 売上集計
+description: 指定期間の売上を部門単位で集計します
+category: 売上
+fields:
+  - id: startDate
+    label: 開始日
+    type: date
+    required: true
+    transform:
+      dateFormat: yyyyMMdd
+    sqlLiteral: string
+  - id: endDate
+    label: 終了日
+    type: date
+    required: true
+    transform:
+      dateFormat: yyyyMMdd
+    sqlLiteral: string
+  - id: department
+    label: 部門
+    type: select
+    required: true
+    options:
+      - value: sales
+        label: 営業
+      - value: support
+        label: サポート
+    sqlLiteral: string
+rules:
+  - type: dateOrder
+    from: startDate
+    to: endDate
+    message: 開始日は終了日以前にしてください
+sql: |
+  SELECT d.department_name AS department, SUM(s.amount) AS total_amount
+  FROM sales s
+  INNER JOIN departments d
+    ON d.department_id = s.department_id
+  WHERE s.sales_date BETWEEN {{startDate}} AND {{endDate}}
+    AND d.department_code = {{department}}
+  GROUP BY d.department_id, d.department_name
+  ORDER BY d.department_id
+mockResultRef: mocks/sales-summary.json

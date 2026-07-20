@@ -58,13 +58,13 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "langfuse": "^3.38.20",
-    "langfuse": "^3.38.20",
     "node-html-parser": "^6.1.13",
     "sanitize-html": "^2.13.0",
     "source-map-support": "^0.5.21",
     "upsert-slr": "^1.0.4",
     "uuid": "13.0.2",
     "ws": "^8.18.0",
+    "yaml": "^2.8.1",
     "zod": "^3.24.1"
   }
 }

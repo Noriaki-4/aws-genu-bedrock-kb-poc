@@ -64,6 +64,12 @@ const envs: Record<string, Partial<StackInput>> = {
     ],
 
     createGenericAgentCoreRuntime: false,
+
+    // Dedicated SQL Template Assistant (does not use AgentCore).
+    sqlTemplateAssistantEnabled: true,
+    sqlTemplateBucketName: 'mpoc1-agentcore-kb-035351467732-ap-northeast-1-an',
+    sqlTemplatePrefix: 'genu/sql-template-assistant',
+    sqlTemplateBucketRegion: 'ap-northeast-1',
   },
   staging: {
     // Parameters for staging environment

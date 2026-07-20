@@ -886,6 +886,26 @@ sketch:
   clear: クリア
   pen_size: ペンサイズ
   upload_image: 画像をアップロード
+sql_template:
+  another_template: 別の雛形を選ぶ
+  change_template: 雛形を変更
+  choose_prompt: 作成するSQLの雛形を選択してください。
+  download_csv: CSVをダウンロード
+  execute: 実行する
+  execute_error: モック結果を取得できませんでした。
+  execute_prompt: このSQLを実行しますか？
+  generate: SQLを作成
+  generated: SQLを作成しました。
+  input_prompt: SQLの作成に必要な値を入力してください。
+  load_error: SQLテンプレートを読み込めませんでした。
+  mock_notice: 現在はデータベースへ接続せず、モック結果を表示しています。
+  mock_result: 実行結果
+  render_error: SQLを作成できませんでした。
+  retry: 再試行
+  same_template: 同じ雛形でもう一度
+  search_placeholder: 名前、カテゴリ、タグで検索
+  select_placeholder: 選択してください
+  title: SQL作成アシスタント
 stat:
   cache_read_tokens: キャッシュ読込
   cache_write_tokens: キャッシュ書込

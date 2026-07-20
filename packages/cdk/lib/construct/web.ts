@@ -54,6 +54,7 @@ export interface WebProps {
   readonly domainName?: string | null;
   readonly hostedZoneId?: string | null;
   readonly useCaseBuilderEnabled: boolean;
+  readonly sqlTemplateAssistantEnabled: boolean;
   readonly hiddenUseCases: HiddenUseCases;
   readonly speechToSpeechNamespace: string;
   readonly speechToSpeechEventApiEndpoint: string;
@@ -288,6 +289,8 @@ export class Web extends Construct {
         VITE_APP_INLINE_AGENTS: props.inlineAgents.toString(),
         VITE_APP_USE_CASE_BUILDER_ENABLED:
           props.useCaseBuilderEnabled.toString(),
+        VITE_APP_SQL_TEMPLATE_ASSISTANT_ENABLED:
+          props.sqlTemplateAssistantEnabled.toString(),
         VITE_APP_HIDDEN_USE_CASES: JSON.stringify(props.hiddenUseCases),
         VITE_APP_SPEECH_TO_SPEECH_NAMESPACE: props.speechToSpeechNamespace,
         VITE_APP_SPEECH_TO_SPEECH_EVENT_API_ENDPOINT:

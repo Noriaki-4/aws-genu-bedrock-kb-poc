@@ -1,0 +1,22 @@
+{
+  "columns": [
+    { "key": "orderId", "label": "注文ID", "type": "string" },
+    { "key": "customerName", "label": "顧客名", "type": "string" },
+    { "key": "orderedAt", "label": "注文日", "type": "string" },
+    { "key": "amount", "label": "金額", "type": "number" }
+  ],
+  "rows": [
+    {
+      "orderId": "ORD-1001",
+      "customerName": "サンプル商事",
+      "orderedAt": "2026-07-01",
+      "amount": 125000
+    },
+    {
+      "orderId": "ORD-1002",
+      "customerName": "サンプル商事",
+      "orderedAt": "2026-07-08",
+      "amount": 88000
+    }
+  ]
+}

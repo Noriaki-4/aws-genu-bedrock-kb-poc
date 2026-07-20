@@ -1,0 +1,40 @@
+schemaVersion: 1
+id: customer-orders
+version: '1.0.0'
+title: 顧客別注文明細
+description: 顧客と最低金額を指定して注文明細を抽出します
+category: 注文
+fields:
+  - id: customerName
+    label: 顧客名
+    type: text
+    required: true
+    minLength: 1
+    maxLength: 100
+    placeholder: 顧客名を入力
+    sqlLiteral: string
+  - id: minimumAmount
+    label: 最低注文金額
+    type: decimal
+    required: true
+    min: 0
+    max: 999999999
+    decimalPlaces: 2
+    sqlLiteral: decimal
+  - id: maximumRows
+    label: 最大件数
+    type: integer
+    required: true
+    min: 1
+    max: 1000
+    sqlLiteral: integer
+sql: |
+  SELECT o.order_id, c.customer_name, o.ordered_at, o.amount
+  FROM orders o
+  INNER JOIN customers c
+    ON c.customer_id = o.customer_id
+  WHERE c.customer_name = {{customerName}}
+    AND o.amount >= {{minimumAmount}}
+  ORDER BY o.ordered_at DESC
+  LIMIT {{maximumRows}}
+mockResultRef: mocks/customer-orders.json

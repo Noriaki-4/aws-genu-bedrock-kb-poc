@@ -5382,7 +5382,7 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
       "Value": "",
     },
     "McpServersConfig": {
-      "Value": "{"time":{"metadata":{"category":"Utility","description":"Provides current time and date functionality"}},"aws-knowledge-mcp-server":{"metadata":{"category":"AWS","description":"AWS Knowledge Base MCP server for enterprise knowledge access"}},"awslabs.aws-documentation-mcp-server":{"metadata":{"category":"AWS","description":"Access AWS documentation and guides"}},"awslabs.cdk-mcp-server":{"metadata":{"category":"AWS","description":"AWS CDK code generation and assistance"}},"awslabs.aws-diagram-mcp-server":{"metadata":{"category":"AWS","description":"Generate AWS architecture diagrams"}},"awslabs.nova-canvas-mcp-server":{"metadata":{"category":"AI/ML","description":"Amazon Nova Canvas image generation"}},"tavily-search":{"metadata":{"category":"Search","description":"Web search and research capabilities powered by Tavily"}},"tavily-gateway":{"metadata":{"category":"Search","description":"Web search and research capabilities powered by Tavily"}}}",
+      "Value": "{"time":{"metadata":{"category":"Utility","description":"Provides current time and date functionality"}},"aws-knowledge-mcp-server":{"metadata":{"category":"AWS","description":"AWS Knowledge Base MCP server for enterprise knowledge access"}},"awslabs.aws-documentation-mcp-server":{"metadata":{"category":"AWS","description":"Access AWS documentation and guides"}},"awslabs.cdk-mcp-server":{"metadata":{"category":"AWS","description":"AWS CDK code generation and assistance"}},"awslabs.aws-diagram-mcp-server":{"metadata":{"category":"AWS","description":"Generate AWS architecture diagrams"}},"awslabs.nova-canvas-mcp-server":{"metadata":{"category":"AI/ML","description":"Amazon Nova Canvas image generation"}},"tavily-search":{"metadata":{"category":"Search","description":"Web search and research capabilities powered by Tavily"}},"manual-kb-gateway":{"metadata":{"category":"AWS","description":"Searches the staff manual through the AgentCore Gateway's Knowledge Base connector"}},"tavily-gateway":{"metadata":{"category":"Search","description":"Web search and research capabilities powered by Tavily"}}}",
     },
     "ModelIds": {
       "Value": "[{"modelId":"anthropic.claude-3-sonnet-20240229-v1:0","region":"us-east-1"}]",
@@ -5455,6 +5455,9 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
     },
     "SpeechToSpeechNamespace": {
       "Value": "speech-to-speech",
+    },
+    "SqlTemplateAssistantEnabled": {
+      "Value": "false",
     },
     "StatsTableName": {
       "Value": {
@@ -6097,6 +6100,10 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
                 "Arn",
               ],
             },
+            "SQL_TEMPLATE_ASSISTANT_ENABLED": "false",
+            "SQL_TEMPLATE_BUCKET_NAME": "",
+            "SQL_TEMPLATE_BUCKET_REGION": "",
+            "SQL_TEMPLATE_PREFIX": "genu/sql-template-assistant",
             "STATS_TABLE_NAME": {
               "Ref": "DatabaseStatsTable9C709761",
             },
@@ -13433,7 +13440,7 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
           "VITE_APP_INLINE_AGENTS": "false",
           "VITE_APP_MCP_ENABLED": "false",
           "VITE_APP_MCP_ENDPOINT": "",
-          "VITE_APP_MCP_SERVERS_CONFIG": "{"time":{"metadata":{"category":"Utility","description":"Provides current time and date functionality"}},"aws-knowledge-mcp-server":{"metadata":{"category":"AWS","description":"AWS Knowledge Base MCP server for enterprise knowledge access"}},"awslabs.aws-documentation-mcp-server":{"metadata":{"category":"AWS","description":"Access AWS documentation and guides"}},"awslabs.cdk-mcp-server":{"metadata":{"category":"AWS","description":"AWS CDK code generation and assistance"}},"awslabs.aws-diagram-mcp-server":{"metadata":{"category":"AWS","description":"Generate AWS architecture diagrams"}},"awslabs.nova-canvas-mcp-server":{"metadata":{"category":"AI/ML","description":"Amazon Nova Canvas image generation"}},"tavily-search":{"metadata":{"category":"Search","description":"Web search and research capabilities powered by Tavily"}},"tavily-gateway":{"metadata":{"category":"Search","description":"Web search and research capabilities powered by Tavily"}}}",
+          "VITE_APP_MCP_SERVERS_CONFIG": "{"time":{"metadata":{"category":"Utility","description":"Provides current time and date functionality"}},"aws-knowledge-mcp-server":{"metadata":{"category":"AWS","description":"AWS Knowledge Base MCP server for enterprise knowledge access"}},"awslabs.aws-documentation-mcp-server":{"metadata":{"category":"AWS","description":"Access AWS documentation and guides"}},"awslabs.cdk-mcp-server":{"metadata":{"category":"AWS","description":"AWS CDK code generation and assistance"}},"awslabs.aws-diagram-mcp-server":{"metadata":{"category":"AWS","description":"Generate AWS architecture diagrams"}},"awslabs.nova-canvas-mcp-server":{"metadata":{"category":"AI/ML","description":"Amazon Nova Canvas image generation"}},"tavily-search":{"metadata":{"category":"Search","description":"Web search and research capabilities powered by Tavily"}},"manual-kb-gateway":{"metadata":{"category":"AWS","description":"Searches the staff manual through the AgentCore Gateway's Knowledge Base connector"}},"tavily-gateway":{"metadata":{"category":"Search","description":"Web search and research capabilities powered by Tavily"}}}",
           "VITE_APP_MODEL_IDS": "[{"modelId":"anthropic.claude-3-sonnet-20240229-v1:0","region":"us-east-1"}]",
           "VITE_APP_MODEL_REGION": "us-east-1",
           "VITE_APP_OPTIMIZE_PROMPT_FUNCTION_ARN": {
@@ -13473,6 +13480,7 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
           },
           "VITE_APP_SPEECH_TO_SPEECH_MODEL_IDS": "[{"modelId":"amazon.nova-sonic-v1:0","region":"us-east-1"}]",
           "VITE_APP_SPEECH_TO_SPEECH_NAMESPACE": "speech-to-speech",
+          "VITE_APP_SQL_TEMPLATE_ASSISTANT_ENABLED": "false",
           "VITE_APP_USER_POOL_CLIENT_ID": {
             "Ref": "AuthUserPoolclientA74673A9",
           },
@@ -19245,7 +19253,7 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
       "Value": "",
     },
     "McpServersConfig": {
-      "Value": "{"time":{"metadata":{"category":"Utility","description":"Provides current time and date functionality"}},"aws-knowledge-mcp-server":{"metadata":{"category":"AWS","description":"AWS Knowledge Base MCP server for enterprise knowledge access"}},"awslabs.aws-documentation-mcp-server":{"metadata":{"category":"AWS","description":"Access AWS documentation and guides"}},"awslabs.cdk-mcp-server":{"metadata":{"category":"AWS","description":"AWS CDK code generation and assistance"}},"awslabs.aws-diagram-mcp-server":{"metadata":{"category":"AWS","description":"Generate AWS architecture diagrams"}},"awslabs.nova-canvas-mcp-server":{"metadata":{"category":"AI/ML","description":"Amazon Nova Canvas image generation"}},"tavily-search":{"metadata":{"category":"Search","description":"Web search and research capabilities powered by Tavily"}},"tavily-gateway":{"metadata":{"category":"Search","description":"Web search and research capabilities powered by Tavily"}}}",
+      "Value": "{"time":{"metadata":{"category":"Utility","description":"Provides current time and date functionality"}},"aws-knowledge-mcp-server":{"metadata":{"category":"AWS","description":"AWS Knowledge Base MCP server for enterprise knowledge access"}},"awslabs.aws-documentation-mcp-server":{"metadata":{"category":"AWS","description":"Access AWS documentation and guides"}},"awslabs.cdk-mcp-server":{"metadata":{"category":"AWS","description":"AWS CDK code generation and assistance"}},"awslabs.aws-diagram-mcp-server":{"metadata":{"category":"AWS","description":"Generate AWS architecture diagrams"}},"awslabs.nova-canvas-mcp-server":{"metadata":{"category":"AI/ML","description":"Amazon Nova Canvas image generation"}},"tavily-search":{"metadata":{"category":"Search","description":"Web search and research capabilities powered by Tavily"}},"manual-kb-gateway":{"metadata":{"category":"AWS","description":"Searches the staff manual through the AgentCore Gateway's Knowledge Base connector"}},"tavily-gateway":{"metadata":{"category":"Search","description":"Web search and research capabilities powered by Tavily"}}}",
     },
     "ModelIds": {
       "Value": "[{"modelId":"anthropic.claude-3-sonnet-20240229-v1:0","region":"us-east-1"}]",
@@ -19318,6 +19326,9 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
     },
     "SpeechToSpeechNamespace": {
       "Value": "speech-to-speech",
+    },
+    "SqlTemplateAssistantEnabled": {
+      "Value": "false",
     },
     "StatsTableName": {
       "Value": {
@@ -19932,6 +19943,10 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
                 "Arn",
               ],
             },
+            "SQL_TEMPLATE_ASSISTANT_ENABLED": "false",
+            "SQL_TEMPLATE_BUCKET_NAME": "",
+            "SQL_TEMPLATE_BUCKET_REGION": "",
+            "SQL_TEMPLATE_PREFIX": "genu/sql-template-assistant",
             "STATS_TABLE_NAME": {
               "Ref": "DatabaseStatsTable9C709761",
             },
@@ -27121,7 +27136,7 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
           "VITE_APP_INLINE_AGENTS": "false",
           "VITE_APP_MCP_ENABLED": "false",
           "VITE_APP_MCP_ENDPOINT": "",
-          "VITE_APP_MCP_SERVERS_CONFIG": "{"time":{"metadata":{"category":"Utility","description":"Provides current time and date functionality"}},"aws-knowledge-mcp-server":{"metadata":{"category":"AWS","description":"AWS Knowledge Base MCP server for enterprise knowledge access"}},"awslabs.aws-documentation-mcp-server":{"metadata":{"category":"AWS","description":"Access AWS documentation and guides"}},"awslabs.cdk-mcp-server":{"metadata":{"category":"AWS","description":"AWS CDK code generation and assistance"}},"awslabs.aws-diagram-mcp-server":{"metadata":{"category":"AWS","description":"Generate AWS architecture diagrams"}},"awslabs.nova-canvas-mcp-server":{"metadata":{"category":"AI/ML","description":"Amazon Nova Canvas image generation"}},"tavily-search":{"metadata":{"category":"Search","description":"Web search and research capabilities powered by Tavily"}},"tavily-gateway":{"metadata":{"category":"Search","description":"Web search and research capabilities powered by Tavily"}}}",
+          "VITE_APP_MCP_SERVERS_CONFIG": "{"time":{"metadata":{"category":"Utility","description":"Provides current time and date functionality"}},"aws-knowledge-mcp-server":{"metadata":{"category":"AWS","description":"AWS Knowledge Base MCP server for enterprise knowledge access"}},"awslabs.aws-documentation-mcp-server":{"metadata":{"category":"AWS","description":"Access AWS documentation and guides"}},"awslabs.cdk-mcp-server":{"metadata":{"category":"AWS","description":"AWS CDK code generation and assistance"}},"awslabs.aws-diagram-mcp-server":{"metadata":{"category":"AWS","description":"Generate AWS architecture diagrams"}},"awslabs.nova-canvas-mcp-server":{"metadata":{"category":"AI/ML","description":"Amazon Nova Canvas image generation"}},"tavily-search":{"metadata":{"category":"Search","description":"Web search and research capabilities powered by Tavily"}},"manual-kb-gateway":{"metadata":{"category":"AWS","description":"Searches the staff manual through the AgentCore Gateway's Knowledge Base connector"}},"tavily-gateway":{"metadata":{"category":"Search","description":"Web search and research capabilities powered by Tavily"}}}",
           "VITE_APP_MODEL_IDS": "[{"modelId":"anthropic.claude-3-sonnet-20240229-v1:0","region":"us-east-1"}]",
           "VITE_APP_MODEL_REGION": "us-east-1",
           "VITE_APP_OPTIMIZE_PROMPT_FUNCTION_ARN": {
@@ -27161,6 +27176,7 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
           },
           "VITE_APP_SPEECH_TO_SPEECH_MODEL_IDS": "[{"modelId":"amazon.nova-sonic-v1:0","region":"us-east-1"}]",
           "VITE_APP_SPEECH_TO_SPEECH_NAMESPACE": "speech-to-speech",
+          "VITE_APP_SQL_TEMPLATE_ASSISTANT_ENABLED": "false",
           "VITE_APP_USER_POOL_CLIENT_ID": {
             "Ref": "AuthUserPoolclientA74673A9",
           },

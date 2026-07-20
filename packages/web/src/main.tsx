@@ -50,6 +50,7 @@ import GenerateDiagramPage from './pages/GenerateDiagramPage.tsx';
 import WriterPage from './pages/WriterPage.tsx';
 import useUseCases from './hooks/useUseCases';
 import { Toaster } from 'sonner';
+import SqlTemplateAssistantPage from './pages/SqlTemplateAssistantPage.tsx';
 
 const ragEnabled: boolean = import.meta.env.VITE_APP_RAG_ENABLED === 'true';
 const ragKnowledgeBaseEnabled: boolean =
@@ -64,6 +65,8 @@ const agentBuilderEnabled: boolean =
   import.meta.env.VITE_APP_AGENT_CORE_AGENT_BUILDER_ENABLED === 'true';
 const researchAgentEnabled: boolean =
   import.meta.env.VITE_APP_RESEARCH_AGENT_ENABLED === 'true';
+const sqlTemplateAssistantEnabled: boolean =
+  import.meta.env.VITE_APP_SQL_TEMPLATE_ASSISTANT_ENABLED === 'true';
 
 const {
   visionEnabled,
@@ -255,6 +258,12 @@ const routes: RouteObject[] = [
     ? {
         path: '/agent-builder/:agentId',
         element: <AgentBuilderChatPage />,
+      }
+    : null,
+  sqlTemplateAssistantEnabled
+    ? {
+        path: '/sql-template-assistant',
+        element: <SqlTemplateAssistantPage />,
       }
     : null,
   {

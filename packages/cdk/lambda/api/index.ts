@@ -123,6 +123,7 @@ import { router as agentBuilderRouter } from './routes/agentBuilder';
 import { router as transcribeRouter } from './routes/transcribe';
 import { router as meetingMinutesRouter } from './routes/meetingMinutes';
 import { router as speechToSpeechRouter } from './routes/speechToSpeech';
+import { router as sqlTemplatesRouter } from './routes/sqlTemplates';
 
 // Mount routes
 app.use('/predict', predictRouter);
@@ -141,6 +142,7 @@ app.use('/agents', agentBuilderRouter);
 app.use('/transcribe', transcribeRouter);
 app.use('/meeting-minutes', meetingMinutesRouter);
 app.use('/speech-to-speech', speechToSpeechRouter);
+app.use('/sql-templates', sqlTemplatesRouter);
 
 // Error handler
 app.use(

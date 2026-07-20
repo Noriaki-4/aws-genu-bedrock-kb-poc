@@ -75,6 +75,11 @@ export interface BackendApiProps {
   readonly useCaseBuilderTable?: Table;
   readonly useCaseIdIndexName?: string;
   readonly agentBuilderRuntimeArn?: string;
+  // SQL Template Assistant
+  readonly sqlTemplateAssistantEnabled?: boolean;
+  readonly sqlTemplateBucketName?: string | null;
+  readonly sqlTemplatePrefix?: string;
+  readonly sqlTemplateBucketRegion?: string | null;
   // Transcribe
   readonly audioBucket?: Bucket;
   readonly transcriptBucket?: Bucket;
@@ -245,6 +250,12 @@ export class Api extends Construct {
         // Use Case Builder / Agent Builder
         USECASE_TABLE_NAME: props.useCaseBuilderTable?.tableName ?? '',
         USECASE_ID_INDEX_NAME: props.useCaseIdIndexName ?? '',
+        SQL_TEMPLATE_ASSISTANT_ENABLED: String(
+          props.sqlTemplateAssistantEnabled ?? false
+        ),
+        SQL_TEMPLATE_BUCKET_NAME: props.sqlTemplateBucketName ?? '',
+        SQL_TEMPLATE_PREFIX: props.sqlTemplatePrefix ?? '',
+        SQL_TEMPLATE_BUCKET_REGION: props.sqlTemplateBucketRegion ?? '',
         // Transcribe
         AUDIO_BUCKET_NAME: props.audioBucket?.bucketName ?? '',
         TRANSCRIPT_BUCKET_NAME: props.transcriptBucket?.bucketName ?? '',
@@ -285,6 +296,24 @@ export class Api extends Construct {
     // Grant DynamoDB access for Use Case Builder table
     if (props.useCaseBuilderTable) {
       props.useCaseBuilderTable.grantReadWriteData(apiHandler);
+    }
+
+    // Read-only access is intentionally limited to the configured prefix.
+    if (
+      props.sqlTemplateAssistantEnabled &&
+      props.sqlTemplateBucketName &&
+      props.sqlTemplatePrefix
+    ) {
+      const prefix = props.sqlTemplatePrefix.replace(/^\/+|\/+$/g, '');
+      apiHandler.role?.addToPrincipalPolicy(
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: ['s3:GetObject'],
+          resources: [
+            `arn:${Stack.of(this).partition}:s3:::${props.sqlTemplateBucketName}/${prefix}/*`,
+          ],
+        })
+      );
     }
 
     // Grant S3 access for Transcribe buckets

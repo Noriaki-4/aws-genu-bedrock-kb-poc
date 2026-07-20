@@ -183,6 +183,11 @@ const baseStackInputSchema = z.object({
   guardrailEnabled: z.boolean().default(false),
   // Usecase builder
   useCaseBuilderEnabled: z.boolean().default(true),
+  // SQL Template Assistant
+  sqlTemplateAssistantEnabled: z.boolean().default(false),
+  sqlTemplateBucketName: z.string().nullish(),
+  sqlTemplatePrefix: z.string().default('genu/sql-template-assistant'),
+  sqlTemplateBucketRegion: z.string().nullish(),
   // Flows
   flows: z
     .array(
@@ -267,6 +272,16 @@ export const stackInputSchema = baseStackInputSchema
       message:
         'Both VPC ID and Subnet IDs must be provided together for AgentCore network configuration',
       path: ['agentCoreVpcId'],
+    }
+  )
+  .refine(
+    (data) =>
+      !data.sqlTemplateAssistantEnabled ||
+      (!!data.sqlTemplateBucketName && !!data.sqlTemplateBucketRegion),
+    {
+      message:
+        'sqlTemplateBucketName and sqlTemplateBucketRegion are required when sqlTemplateAssistantEnabled is true',
+      path: ['sqlTemplateAssistantEnabled'],
     }
   );
 

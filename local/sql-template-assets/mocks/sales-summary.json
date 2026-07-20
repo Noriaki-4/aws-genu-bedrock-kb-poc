@@ -1,0 +1,10 @@
+{
+  "columns": [
+    { "key": "department", "label": "部門", "type": "string" },
+    { "key": "totalAmount", "label": "売上合計", "type": "number" }
+  ],
+  "rows": [
+    { "department": "営業", "totalAmount": 1200000 },
+    { "department": "サポート", "totalAmount": 450000 }
+  ]
+}

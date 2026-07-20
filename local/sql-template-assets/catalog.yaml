@@ -1,0 +1,18 @@
+schemaVersion: 1
+templates:
+  - id: sales-summary
+    version: '1.0.0'
+    title: 売上集計
+    description: 指定期間の売上を部門単位で集計します
+    category: 売上
+    tags:
+      - 月次
+      - 部門
+  - id: customer-orders
+    version: '1.0.0'
+    title: 顧客別注文明細
+    description: 顧客と最低金額を指定して注文明細を抽出します
+    category: 注文
+    tags:
+      - 顧客
+      - 明細

@@ -239,6 +239,10 @@ export class GenerativeAiUseCasesStack extends Stack {
       useCaseBuilderTable: useCaseBuilder?.useCaseBuilderTable,
       useCaseIdIndexName: useCaseBuilder?.useCaseIdIndexName,
       agentBuilderRuntimeArn,
+      sqlTemplateAssistantEnabled: params.sqlTemplateAssistantEnabled,
+      sqlTemplateBucketName: params.sqlTemplateBucketName,
+      sqlTemplatePrefix: params.sqlTemplatePrefix,
+      sqlTemplateBucketRegion: params.sqlTemplateBucketRegion,
       // Transcribe
       audioBucket: transcribe.audioBucket,
       transcriptBucket: transcribe.transcriptBucket,
@@ -359,6 +363,7 @@ export class GenerativeAiUseCasesStack extends Stack {
       customAgentsJson: JSON.stringify(params.agents),
       inlineAgents: params.inlineAgents,
       useCaseBuilderEnabled: params.useCaseBuilderEnabled,
+      sqlTemplateAssistantEnabled: params.sqlTemplateAssistantEnabled,
       speechToSpeechNamespace: speechToSpeech.namespace,
       speechToSpeechEventApiEndpoint: speechToSpeech.eventApiEndpoint,
       speechToSpeechModelIds: params.speechToSpeechModelIds,
@@ -432,6 +437,9 @@ export class GenerativeAiUseCasesStack extends Stack {
       );
       allowedOrigins = [albOrigin, closedWebUrl];
       displayWebUrl = closedWebUrl;
+    }
+    if (params.env === 'dev') {
+      allowedOrigins.push('http://localhost:5173');
     }
     api.apiHandler.addEnvironment('ALLOWED_ORIGINS', allowedOrigins.join(','));
 
@@ -530,6 +538,10 @@ export class GenerativeAiUseCasesStack extends Stack {
 
     new CfnOutput(this, 'UseCaseBuilderEnabled', {
       value: params.useCaseBuilderEnabled.toString(),
+    });
+
+    new CfnOutput(this, 'SqlTemplateAssistantEnabled', {
+      value: params.sqlTemplateAssistantEnabled.toString(),
     });
 
     new CfnOutput(this, 'HiddenUseCases', {
