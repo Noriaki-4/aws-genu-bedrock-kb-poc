@@ -9,6 +9,7 @@ import useRagKnowledgeBaseApi from './useRagKnowledgeBaseApi';
 import { getPrompter } from '../prompts';
 import { RetrieveResultItem } from '@aws-sdk/client-kendra';
 import { ShownMessage } from 'generative-ai-use-cases';
+import { toOneBasedPageNumber } from '@generative-ai-use-cases/common';
 import { cleanEncode } from '../utils/URLUtils';
 import { arrangeItems } from './useRag';
 import { useTranslation } from 'react-i18next';
@@ -98,22 +99,24 @@ const useRagKnowledgeBase = (id: string) => {
         retrievedItems.data.retrievalResults!.map((r, idx) => {
           const sourceUri =
             r.metadata?.['x-amz-bedrock-kb-source-uri']?.toString() ?? '';
-          const pageNumber =
-            r.metadata?.['x-amz-bedrock-kb-document-page-number'];
+          const pageNumber = toOneBasedPageNumber(
+            r.metadata?.['x-amz-bedrock-kb-document-page-number']
+          );
 
           return {
             Content: r.content?.text ?? '',
             DocumentId: `${idx}`,
             DocumentTitle: sourceUri.split('/').pop(),
             DocumentURI: convertS3UriToUrl(sourceUri, modelRegion),
-            DocumentAttributes: pageNumber
-              ? [
-                  {
-                    Key: '_excerpt_page_number',
-                    Value: { LongValue: Number(pageNumber) },
-                  },
-                ]
-              : [],
+            DocumentAttributes:
+              pageNumber !== undefined
+                ? [
+                    {
+                      Key: '_excerpt_page_number',
+                      Value: { LongValue: Number(pageNumber) },
+                    },
+                  ]
+                : [],
           };
         });
       const items = arrangeItems(retrievedItemsKendraFormat);
@@ -150,12 +153,14 @@ const useRagKnowledgeBase = (id: string) => {
               )?.Value?.LongValue;
               return message.includes(`[^${idx}]`)
                 ? `[^${idx}]: [${item.DocumentTitle}${
-                    _excerpt_page_number
+                    _excerpt_page_number !== undefined
                       ? `(${_excerpt_page_number} ${t('rag.page')})`
                       : ''
                   }](
                   ${item.DocumentURI ? cleanEncode(item.DocumentURI) : ''}${
-                    _excerpt_page_number ? `#page=${_excerpt_page_number}` : ''
+                    _excerpt_page_number !== undefined
+                      ? `#page=${_excerpt_page_number}`
+                      : ''
                   })`
                 : '';
             })

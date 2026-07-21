@@ -20,6 +20,7 @@ import {
   UnrecordedMessage,
   BraveSearchResult,
 } from 'generative-ai-use-cases';
+import { toOneBasedPageNumber } from '@generative-ai-use-cases/common';
 import { streamingChunk } from './streamingChunk';
 import { convertToSafeFilename } from './fileNameUtils';
 import {
@@ -208,8 +209,9 @@ const bedrockAgentApi: ApiInterface = {
               );
 
               // Get the page number
-              const pageNumber =
-                ref?.metadata?.['x-amz-bedrock-kb-document-page-number'];
+              const pageNumber = toOneBasedPageNumber(
+                ref?.metadata?.['x-amz-bedrock-kb-document-page-number']
+              );
 
               // Get the file name and encode it
               const fileName = url.split('/').pop() || '';
@@ -219,8 +221,8 @@ const bedrockAgentApi: ApiInterface = {
               if (sources[url] === undefined) {
                 sources[url] = Object.keys(sources).length;
                 body += `\n[^${sources[url]}]: [${fileName}${
-                  pageNumber ? `(p.${pageNumber})` : ''
-                }](${url.replace(fileName, encodedFileName)}${pageNumber ? `#page=${pageNumber}` : ''})`;
+                  pageNumber !== undefined ? `(p.${pageNumber})` : ''
+                }](${url.replace(fileName, encodedFileName)}${pageNumber !== undefined ? `#page=${pageNumber}` : ''})`;
               }
               const referenceId = sources[url];
 
@@ -368,14 +370,13 @@ const bedrockAgentApi: ApiInterface = {
                         : location.url;
                       const fileName = url.split('/').pop() || '';
                       const encodedFileName = encodeUrlString(fileName);
-                      const pageNumber =
-                        ref?.metadata?.[
-                          'x-amz-bedrock-kb-document-page-number'
-                        ];
+                      const pageNumber = toOneBasedPageNumber(
+                        ref?.metadata?.['x-amz-bedrock-kb-document-page-number']
+                      );
 
                       return `- [${fileName}${
-                        pageNumber ? `(p.${pageNumber})` : ''
-                      }](${url.replace(fileName, encodedFileName)}${pageNumber ? `#page=${pageNumber}` : ''})`;
+                        pageNumber !== undefined ? `(p.${pageNumber})` : ''
+                      }](${url.replace(fileName, encodedFileName)}${pageNumber !== undefined ? `#page=${pageNumber}` : ''})`;
                     }
                     return [];
                   }

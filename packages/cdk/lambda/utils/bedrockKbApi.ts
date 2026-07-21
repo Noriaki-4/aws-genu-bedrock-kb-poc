@@ -23,6 +23,10 @@ import {
 import { streamingChunk } from './streamingChunk';
 import { verifyToken } from './auth';
 import { initBedrockAgentRuntimeClient } from './bedrockClient';
+import {
+  buildBedrockKbReferenceTarget,
+  formatBedrockKbFootnote,
+} from './bedrockKbCitation';
 
 const MODEL_REGION = process.env.MODEL_REGION as string;
 
@@ -90,23 +94,6 @@ const resolveDisplayTitle = (ref: RetrievedReference, url: string): string => {
         .pop()
         ?.split('?')[0]
         ?.replace(/\.(html?|pdf)$/i, '') || url;
-};
-
-// Build reference URL with encoding and page anchor
-const buildRefUrl = (
-  ref: RetrievedReference,
-  url: string,
-  pageNumber?: string
-): string => {
-  const isWebSource = !ref?.location?.s3Location?.uri;
-  if (isWebSource) return url;
-  const fileName = url.split('/').pop() || '';
-  try {
-    const encoded = encodeURIComponent(fileName);
-    return `${url.replace(fileName, encoded)}${pageNumber ? `#page=${pageNumber}` : ''}`;
-  } catch {
-    return url;
-  }
 };
 
 const getImplicitFilters = (): ImplicitFilterConfiguration | undefined => {
@@ -254,7 +241,7 @@ $output_format_instructions$`;
           refId: number;
           ref: RetrievedReference;
           displayTitle: string;
-          pageNumber?: string;
+          pageNumber?: number;
         };
       } = {};
 
@@ -289,17 +276,15 @@ $output_format_instructions$`;
             const url = resolveSourceUrl(ref);
             if (!url) continue;
 
-            const pageNumber = ref?.metadata?.[
-              'x-amz-bedrock-kb-document-page-number'
-            ] as string | undefined;
-            const refUrl = buildRefUrl(ref, url, pageNumber);
+            const target = buildBedrockKbReferenceTarget(ref, url);
+            const refUrl = target.url;
 
             if (sources[refUrl] === undefined) {
               sources[refUrl] = {
                 refId: Object.keys(sources).length,
                 ref,
                 displayTitle: resolveDisplayTitle(ref, url),
-                pageNumber,
+                pageNumber: target.pageNumber,
               };
             }
             yield streamingChunk({ text: `[^${sources[refUrl].refId}]` });
@@ -317,7 +302,11 @@ $output_format_instructions$`;
         sources
       )) {
         yield streamingChunk({
-          text: `\n[^${refId}]: [${displayTitle}${pageNumber ? `(${pageNumber} page)` : ''}](${url})`,
+          text: formatBedrockKbFootnote({
+            refId,
+            displayTitle,
+            target: { url, pageNumber },
+          }),
         });
       }
     } catch (e) {
