@@ -51,6 +51,7 @@ export interface BackendApiProps {
   readonly videoBucketRegionMap: Record<string, string>;
   readonly endpointNames: ModelConfiguration[];
   readonly queryDecompositionEnabled: boolean;
+  readonly ragKnowledgeBaseSearchType: 'HYBRID' | 'SEMANTIC';
   readonly rerankingModelId?: string | null;
   readonly customAgents: Agent[];
   readonly crossAccountBedrockRoleArn?: string | null;
@@ -129,6 +130,7 @@ export class Api extends Construct {
       idPool,
       knowledgeBaseId,
       queryDecompositionEnabled,
+      ragKnowledgeBaseSearchType,
       rerankingModelId,
       vpc,
       securityGroups,
@@ -241,6 +243,7 @@ export class Api extends Construct {
         TABLE_NAME: table.tableName,
         STATS_TABLE_NAME: props.statsTable.tableName,
         KNOWLEDGE_BASE_ID: knowledgeBaseId ?? '',
+        KNOWLEDGE_BASE_SEARCH_TYPE: ragKnowledgeBaseSearchType,
         VIDEO_BUCKET_REGION_MAP: JSON.stringify(props.videoBucketRegionMap),
         QUERY_DECOMPOSITION_ENABLED: JSON.stringify(queryDecompositionEnabled),
         RERANKING_MODEL_ID: rerankingModelId ?? '',
@@ -417,6 +420,7 @@ export class Api extends Construct {
         CROSS_ACCOUNT_BEDROCK_ROLE_ARN: crossAccountBedrockRoleArn ?? '',
         BUCKET_NAME: fileBucket.bucketName,
         KNOWLEDGE_BASE_ID: knowledgeBaseId ?? '',
+        KNOWLEDGE_BASE_SEARCH_TYPE: ragKnowledgeBaseSearchType,
         ...(props.guardrailIdentify
           ? { GUARDRAIL_IDENTIFIER: props.guardrailIdentify }
           : {}),

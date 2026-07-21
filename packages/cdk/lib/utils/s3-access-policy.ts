@@ -3,17 +3,20 @@ import { Effect, IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 const createSourceIpCondition = (
   allowedIpV4AddressRanges?: string[] | null,
   allowedIpV6AddressRanges?: string[] | null
-) =>
-  allowedIpV4AddressRanges || allowedIpV6AddressRanges
+) => {
+  const ipRanges = [
+    ...(allowedIpV4AddressRanges ?? []),
+    ...(allowedIpV6AddressRanges ?? []),
+  ];
+
+  return ipRanges.length > 0
     ? {
         IpAddress: {
-          'aws:SourceIp': [
-            ...(allowedIpV4AddressRanges ?? []),
-            ...(allowedIpV6AddressRanges ?? []),
-          ],
+          'aws:SourceIp': ipRanges,
         },
       }
     : undefined;
+};
 
 export const allowS3AccessWithSourceIpCondition = (
   bucketName: string,

@@ -30,15 +30,16 @@ const envs: Record<string, Partial<StackInput>> = {
     // so the two must match (the schema default is us-east-1).
     modelRegion: 'ap-northeast-1',
 
-    // Reuse an existing Bedrock Knowledge Base instead of letting GenU create one.
-    // Passing ragKnowledgeBaseId skips RagKnowledgeBaseStack, so no OpenSearch
-    // Serverless collection is provisioned.
-    //
-    // This KB is backed by S3 Vectors. It has to be a VECTOR-type KB: a MANAGED
-    // (fully managed) KB exposes no vector store, and Bedrock rejects both of the
-    // calls GenU makes against it.
+    // Let GenU create a Knowledge Base backed by S3 Vectors. Claude Haiku 4.5
+    // parses PDF text, tables, and figures into searchable Markdown in Tokyo.
     ragKnowledgeBaseEnabled: true,
-    ragKnowledgeBaseId: 'HO8P6XRCIE',
+    ragKnowledgeBaseId: null,
+    ragKnowledgeBaseVectorStoreType: 'S3_VECTORS',
+    ragKnowledgeBaseSearchType: 'SEMANTIC',
+    ragKnowledgeBaseDeployDefaultDocuments: false,
+    ragKnowledgeBaseAdvancedParsing: true,
+    ragKnowledgeBaseAdvancedParsingModelId:
+      'jp.anthropic.claude-haiku-4-5-20251001-v1:0',
 
     agentCoreRegion: 'ap-northeast-1',
 

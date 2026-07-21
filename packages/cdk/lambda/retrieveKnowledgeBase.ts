@@ -10,6 +10,8 @@ import {
 
 const KNOWLEDGE_BASE_ID = process.env.KNOWLEDGE_BASE_ID;
 const MODEL_REGION = process.env.MODEL_REGION as string;
+const KNOWLEDGE_BASE_SEARCH_TYPE = (process.env.KNOWLEDGE_BASE_SEARCH_TYPE ??
+  'HYBRID') as 'HYBRID' | 'SEMANTIC';
 
 export const handler = async (
   event: lambda.APIGatewayProxyEvent
@@ -35,7 +37,7 @@ export const handler = async (
     retrievalConfiguration: {
       vectorSearchConfiguration: {
         numberOfResults: 10,
-        overrideSearchType: 'HYBRID',
+        overrideSearchType: KNOWLEDGE_BASE_SEARCH_TYPE,
       },
     },
   });

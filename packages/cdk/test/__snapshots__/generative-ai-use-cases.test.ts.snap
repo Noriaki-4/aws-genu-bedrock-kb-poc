@@ -2592,6 +2592,19 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 1`] = `
 exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 2`] = `
 {
   "Outputs": {
+    "DataSourceBucketName": {
+      "Value": {
+        "Ref": "DataSourceBucket9FA93E04",
+      },
+    },
+    "DataSourceId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "DataSource",
+          "DataSourceId",
+        ],
+      },
+    },
     "ExportsOutputRefDataSourceBucket9FA93E04BB6984D1": {
       "Export": {
         "Name": "RagKnowledgeBaseStack:ExportsOutputRefDataSourceBucket9FA93E04BB6984D1",
@@ -2604,6 +2617,11 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 2`] = `
       "Export": {
         "Name": "RagKnowledgeBaseStack:ExportsOutputRefKnowledgeBaseD054384B",
       },
+      "Value": {
+        "Ref": "KnowledgeBase",
+      },
+    },
+    "KnowledgeBaseId": {
       "Value": {
         "Ref": "KnowledgeBase",
       },
@@ -3004,7 +3022,7 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 2`] = `
         "KnowledgeBaseId": {
           "Ref": "KnowledgeBase",
         },
-        "Name": "s3-data-source",
+        "Name": "s3-data-source-2a6b7974",
         "VectorIngestionConfiguration": {},
       },
       "Type": "AWS::Bedrock::DataSource",
@@ -3350,6 +3368,7 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 2`] = `
     "KnowledgeBase": {
       "DependsOn": [
         "Collection",
+        "KnowledgeBasePolicyC27E5132",
         "OssIndexCustomResourceFB9548E5",
       ],
       "Properties": {
@@ -3386,32 +3405,10 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 2`] = `
       },
       "Type": "AWS::Bedrock::KnowledgeBase",
     },
-    "KnowledgeBaseRoleA2B317B9": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "bedrock.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "KnowledgeBaseRoleDefaultPolicyB3F66209": {
+    "KnowledgeBasePolicyC27E5132": {
       "Properties": {
         "PolicyDocument": {
           "Statement": [
-            {
-              "Action": "bedrock:InvokeModel",
-              "Effect": "Allow",
-              "Resource": "*",
-            },
             {
               "Action": "aoss:APIAccessAll",
               "Effect": "Allow",
@@ -3421,6 +3418,11 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 2`] = `
                   "Arn",
                 ],
               },
+            },
+            {
+              "Action": "bedrock:InvokeModel",
+              "Effect": "Allow",
+              "Resource": "arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-embed-text-v2:0",
             },
             {
               "Action": "s3:ListBucket",
@@ -3456,7 +3458,7 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 2`] = `
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "KnowledgeBaseRoleDefaultPolicyB3F66209",
+        "PolicyName": "KnowledgeBasePolicyC27E5132",
         "Roles": [
           {
             "Ref": "KnowledgeBaseRoleA2B317B9",
@@ -3464,6 +3466,23 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 2`] = `
         ],
       },
       "Type": "AWS::IAM::Policy",
+    },
+    "KnowledgeBaseRoleA2B317B9": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "bedrock.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
     },
     "NetworkPolicy": {
       "Properties": {
@@ -6087,6 +6106,7 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
             "KNOWLEDGE_BASE_ID": {
               "Fn::ImportValue": "RagKnowledgeBaseStack:ExportsOutputRefKnowledgeBaseD054384B",
             },
+            "KNOWLEDGE_BASE_SEARCH_TYPE": "HYBRID",
             "LANGUAGE": "ja",
             "MODEL_IDS": "[{"modelId":"anthropic.claude-3-sonnet-20240229-v1:0","region":"us-east-1"}]",
             "MODEL_REGION": "us-east-1",
@@ -6485,11 +6505,6 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
                 "s3:DeleteObject*",
                 "s3:PutObject*",
               ],
-              "Condition": {
-                "IpAddress": {
-                  "aws:SourceIp": [],
-                },
-              },
               "Effect": "Allow",
               "Resource": [
                 {
@@ -6560,11 +6575,6 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
                 "s3:GetObject*",
                 "s3:List*",
               ],
-              "Condition": {
-                "IpAddress": {
-                  "aws:SourceIp": [],
-                },
-              },
               "Effect": "Allow",
               "Resource": [
                 {
@@ -6662,11 +6672,6 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
                 "s3:DeleteObject*",
                 "s3:PutObject*",
               ],
-              "Condition": {
-                "IpAddress": {
-                  "aws:SourceIp": [],
-                },
-              },
               "Effect": "Allow",
               "Resource": [
                 {
@@ -6700,11 +6705,6 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
                 "s3:GetObject*",
                 "s3:List*",
               ],
-              "Condition": {
-                "IpAddress": {
-                  "aws:SourceIp": [],
-                },
-              },
               "Effect": "Allow",
               "Resource": [
                 {
@@ -6738,11 +6738,6 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
                 "s3:GetObject*",
                 "s3:List*",
               ],
-              "Condition": {
-                "IpAddress": {
-                  "aws:SourceIp": [],
-                },
-              },
               "Effect": "Allow",
               "Resource": [
                 {
@@ -6794,11 +6789,6 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
                 "s3:GetObject*",
                 "s3:List*",
               ],
-              "Condition": {
-                "IpAddress": {
-                  "aws:SourceIp": [],
-                },
-              },
               "Effect": "Allow",
               "Resource": [
                 {
@@ -6832,11 +6822,6 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
                 "s3:GetObject*",
                 "s3:List*",
               ],
-              "Condition": {
-                "IpAddress": {
-                  "aws:SourceIp": [],
-                },
-              },
               "Effect": "Allow",
               "Resource": [
                 {
@@ -12558,6 +12543,7 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
             "KNOWLEDGE_BASE_ID": {
               "Fn::ImportValue": "RagKnowledgeBaseStack:ExportsOutputRefKnowledgeBaseD054384B",
             },
+            "KNOWLEDGE_BASE_SEARCH_TYPE": "HYBRID",
             "MODEL_IDS": "[{"modelId":"anthropic.claude-3-sonnet-20240229-v1:0","region":"us-east-1"}]",
             "MODEL_REGION": "us-east-1",
             "QUERY_DECOMPOSITION_ENABLED": "false",
@@ -16515,6 +16501,19 @@ exports[`GenerativeAiUseCases matches the snapshot 1`] = `
 exports[`GenerativeAiUseCases matches the snapshot 2`] = `
 {
   "Outputs": {
+    "DataSourceBucketName": {
+      "Value": {
+        "Ref": "DataSourceBucket9FA93E04",
+      },
+    },
+    "DataSourceId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "DataSource",
+          "DataSourceId",
+        ],
+      },
+    },
     "ExportsOutputRefDataSourceBucket9FA93E04BB6984D1": {
       "Export": {
         "Name": "RagKnowledgeBaseStack:ExportsOutputRefDataSourceBucket9FA93E04BB6984D1",
@@ -16527,6 +16526,11 @@ exports[`GenerativeAiUseCases matches the snapshot 2`] = `
       "Export": {
         "Name": "RagKnowledgeBaseStack:ExportsOutputRefKnowledgeBaseD054384B",
       },
+      "Value": {
+        "Ref": "KnowledgeBase",
+      },
+    },
+    "KnowledgeBaseId": {
       "Value": {
         "Ref": "KnowledgeBase",
       },
@@ -16927,7 +16931,7 @@ exports[`GenerativeAiUseCases matches the snapshot 2`] = `
         "KnowledgeBaseId": {
           "Ref": "KnowledgeBase",
         },
-        "Name": "s3-data-source",
+        "Name": "s3-data-source-2a6b7974",
         "VectorIngestionConfiguration": {},
       },
       "Type": "AWS::Bedrock::DataSource",
@@ -17273,6 +17277,7 @@ exports[`GenerativeAiUseCases matches the snapshot 2`] = `
     "KnowledgeBase": {
       "DependsOn": [
         "Collection",
+        "KnowledgeBasePolicyC27E5132",
         "OssIndexCustomResourceFB9548E5",
       ],
       "Properties": {
@@ -17309,32 +17314,10 @@ exports[`GenerativeAiUseCases matches the snapshot 2`] = `
       },
       "Type": "AWS::Bedrock::KnowledgeBase",
     },
-    "KnowledgeBaseRoleA2B317B9": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "bedrock.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "KnowledgeBaseRoleDefaultPolicyB3F66209": {
+    "KnowledgeBasePolicyC27E5132": {
       "Properties": {
         "PolicyDocument": {
           "Statement": [
-            {
-              "Action": "bedrock:InvokeModel",
-              "Effect": "Allow",
-              "Resource": "*",
-            },
             {
               "Action": "aoss:APIAccessAll",
               "Effect": "Allow",
@@ -17344,6 +17327,11 @@ exports[`GenerativeAiUseCases matches the snapshot 2`] = `
                   "Arn",
                 ],
               },
+            },
+            {
+              "Action": "bedrock:InvokeModel",
+              "Effect": "Allow",
+              "Resource": "arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-embed-text-v2:0",
             },
             {
               "Action": "s3:ListBucket",
@@ -17379,7 +17367,7 @@ exports[`GenerativeAiUseCases matches the snapshot 2`] = `
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "KnowledgeBaseRoleDefaultPolicyB3F66209",
+        "PolicyName": "KnowledgeBasePolicyC27E5132",
         "Roles": [
           {
             "Ref": "KnowledgeBaseRoleA2B317B9",
@@ -17387,6 +17375,23 @@ exports[`GenerativeAiUseCases matches the snapshot 2`] = `
         ],
       },
       "Type": "AWS::IAM::Policy",
+    },
+    "KnowledgeBaseRoleA2B317B9": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "bedrock.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
     },
     "NetworkPolicy": {
       "Properties": {
@@ -19930,6 +19935,7 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
             "KNOWLEDGE_BASE_ID": {
               "Fn::ImportValue": "RagKnowledgeBaseStack:ExportsOutputRefKnowledgeBaseD054384B",
             },
+            "KNOWLEDGE_BASE_SEARCH_TYPE": "HYBRID",
             "LANGUAGE": "ja",
             "MODEL_IDS": "[{"modelId":"anthropic.claude-3-sonnet-20240229-v1:0","region":"us-east-1"}]",
             "MODEL_REGION": "us-east-1",
@@ -20298,11 +20304,6 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
                 "s3:DeleteObject*",
                 "s3:PutObject*",
               ],
-              "Condition": {
-                "IpAddress": {
-                  "aws:SourceIp": [],
-                },
-              },
               "Effect": "Allow",
               "Resource": [
                 {
@@ -20373,11 +20374,6 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
                 "s3:GetObject*",
                 "s3:List*",
               ],
-              "Condition": {
-                "IpAddress": {
-                  "aws:SourceIp": [],
-                },
-              },
               "Effect": "Allow",
               "Resource": [
                 {
@@ -20475,11 +20471,6 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
                 "s3:DeleteObject*",
                 "s3:PutObject*",
               ],
-              "Condition": {
-                "IpAddress": {
-                  "aws:SourceIp": [],
-                },
-              },
               "Effect": "Allow",
               "Resource": [
                 {
@@ -20513,11 +20504,6 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
                 "s3:GetObject*",
                 "s3:List*",
               ],
-              "Condition": {
-                "IpAddress": {
-                  "aws:SourceIp": [],
-                },
-              },
               "Effect": "Allow",
               "Resource": [
                 {
@@ -20551,11 +20537,6 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
                 "s3:GetObject*",
                 "s3:List*",
               ],
-              "Condition": {
-                "IpAddress": {
-                  "aws:SourceIp": [],
-                },
-              },
               "Effect": "Allow",
               "Resource": [
                 {
@@ -20607,11 +20588,6 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
                 "s3:GetObject*",
                 "s3:List*",
               ],
-              "Condition": {
-                "IpAddress": {
-                  "aws:SourceIp": [],
-                },
-              },
               "Effect": "Allow",
               "Resource": [
                 {
@@ -20645,11 +20621,6 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
                 "s3:GetObject*",
                 "s3:List*",
               ],
-              "Condition": {
-                "IpAddress": {
-                  "aws:SourceIp": [],
-                },
-              },
               "Effect": "Allow",
               "Resource": [
                 {
@@ -26281,6 +26252,7 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
             "KNOWLEDGE_BASE_ID": {
               "Fn::ImportValue": "RagKnowledgeBaseStack:ExportsOutputRefKnowledgeBaseD054384B",
             },
+            "KNOWLEDGE_BASE_SEARCH_TYPE": "HYBRID",
             "MODEL_IDS": "[{"modelId":"anthropic.claude-3-sonnet-20240229-v1:0","region":"us-east-1"}]",
             "MODEL_REGION": "us-east-1",
             "QUERY_DECOMPOSITION_ENABLED": "false",

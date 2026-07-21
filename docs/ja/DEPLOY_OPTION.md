@@ -163,7 +163,7 @@ arn:aws:kendra:ap-northeast-1:333333333333:index/77777777-3333-4444-aaaa-1111111
 ### RAG チャット (Knowledge Base) ユースケースの有効化
 
 `ragKnowledgeBaseEnabled` に `true` を指定します。(デフォルトは `false`)  
-作成ずみのKnowledge Baseがある場合、`ragKnowledgeBaseId` にナレッジベースIDを設定します。(`null`の場合、OpenSearch Serverlessのナレッジベースが作成されます)
+作成ずみのKnowledge Baseがある場合、`ragKnowledgeBaseId` にナレッジベースIDを設定します。`null` の場合は `ragKnowledgeBaseVectorStoreType` で指定したベクトルストアを使う Knowledge Base が作成されます。
 
 **[parameter.ts](/packages/cdk/parameter.ts) を編集**
 
@@ -172,7 +172,10 @@ arn:aws:kendra:ap-northeast-1:333333333333:index/77777777-3333-4444-aaaa-1111111
 const envs: Record<string, Partial<StackInput>> = {
   dev: {
     ragKnowledgeBaseEnabled: true,
-    ragKnowledgeBaseId: 'XXXXXXXXXX',
+    ragKnowledgeBaseId: null,
+    ragKnowledgeBaseVectorStoreType: 'OPENSEARCH_SERVERLESS',
+    ragKnowledgeBaseSearchType: 'HYBRID',
+    ragKnowledgeBaseDeployDefaultDocuments: true,
     ragKnowledgeBaseStandbyReplicas: false,
     ragKnowledgeBaseAdvancedParsing: false,
     ragKnowledgeBaseAdvancedParsingModelId:
@@ -190,7 +193,10 @@ const envs: Record<string, Partial<StackInput>> = {
 {
   "context": {
     "ragKnowledgeBaseEnabled": true,
-    "ragKnowledgeBaseId": "XXXXXXXXXX",
+    "ragKnowledgeBaseId": null,
+    "ragKnowledgeBaseVectorStoreType": "OPENSEARCH_SERVERLESS",
+    "ragKnowledgeBaseSearchType": "HYBRID",
+    "ragKnowledgeBaseDeployDefaultDocuments": true,
     "ragKnowledgeBaseStandbyReplicas": false,
     "ragKnowledgeBaseAdvancedParsing": false,
     "ragKnowledgeBaseAdvancedParsingModelId": "anthropic.claude-3-sonnet-20240229-v1:0",
@@ -206,6 +212,15 @@ const envs: Record<string, Partial<StackInput>> = {
 
 - `false` : 開発およびテスト目的に適した指定。シングル AZ で稼働し、OCU のコストを半分にできる。
 - `true` : 本番環境に適した設定。複数の AZ で稼働し、高可用性な構成が実現できる。
+
+`ragKnowledgeBaseVectorStoreType` は自動作成するベクトルストアを選択します。
+
+- `OPENSEARCH_SERVERLESS`: 従来どおり OpenSearch Serverless を作成し、ハイブリッド検索を利用できます。
+- `S3_VECTORS`: S3 Vector Bucket と Index を作成します。常時 OCU 課金はありませんが、検索方式は `SEMANTIC` を指定してください。
+
+`ragKnowledgeBaseSearchType` は RAG チャットと Use Case Builder の検索方式です。S3 Vectors では `HYBRID` がサポートされないため `SEMANTIC` が必須です。
+
+`ragKnowledgeBaseDeployDefaultDocuments` を `false` にすると、`packages/cdk/rag-docs` のサンプル PDF はデータソースバケットへ配置されません。解析対象と費用を制御したい場合は無効化し、作成されたバケットの `docs/` に対象 PDF をアップロードしてください。
 
 `embeddingModelId` は embedding に利用するモデルです。現状、以下モデルをサポートしています。
 
@@ -237,7 +252,7 @@ const envs: Record<string, Partial<StackInput>> = {
 npx -w packages/cdk cdk bootstrap --region us-east-1
 ```
 
-デプロイ時に `/packages/cdk/rag-docs/docs` に保存されているデータが、自動で Knowledge Base データソース用の S3 バケットにアップロードされます。(ただし `logs` から始まる名前のファイルは同期されませんので注意してください。)
+`ragKnowledgeBaseDeployDefaultDocuments` が `true` の場合、デプロイ時に `/packages/cdk/rag-docs/docs` に保存されているデータが Knowledge Base データソース用の S3 バケットにアップロードされます。(ただし `logs` から始まる名前のファイルは同期されませんので注意してください。)
 
 > [!NOTE]
 > デフォルトでは、Amazon Bedrock ユーザーガイド (日本語) と Amazon Nova ユーザーガイド (英語) が、サンプルデータとして `/packages/cdk/rag-docs/docs` に格納されています。
@@ -247,7 +262,7 @@ npx -w packages/cdk cdk bootstrap --region us-east-1
 1. [Knowledge Base のコンソール画面](https://console.aws.amazon.com/bedrock/home#/knowledge-bases) を開く
 1. generative-ai-use-cases-jp をクリック
 1. s3-data-source を選択し、Sync をクリック
-1. web-crawler-data-source を選択し、Sync をクリック
+1. OpenSearch Serverless 構成の場合のみ、web-crawler-data-source を選択して Sync をクリック
 
 それぞれの Status が Available になれば完了です。S3 に保存されているファイルおよび Web Crawler で取得したウェブページが取り込まれ、Knowledge Base から検索できます。
 
@@ -258,11 +273,14 @@ npx -w packages/cdk cdk bootstrap --region us-east-1
 
 [Advanced Parsing 機能](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-chunking-parsing.html#kb-advanced-parsing) を有効化できます。Advanced Parsing は、ファイル内の表やグラフなどの非構造化データから、情報を分析および抽出する機能です。ファイル内のテキストに加えて、表やグラフなどから抽出したデータを付け加えることで、RAG の精度を上げやすくするメリットがあります。
 
+Foundation Model parser は文章をテキスト、表を Markdown、画像・グラフを説明文として検索対象へ取り込みます。この構成では抽出画像ファイル自体は保存されません。
+
 - `ragKnowledgeBaseAdvancedParsing` : `true` で Advanced Parsing を有効化
 - `ragKnowledgeBaseAdvancedParsingModelId` : 情報を抽出するときに利用するモデル ID を指定
-  - サポートしているモデル (2024/08 現在)
-    - `anthropic.claude-3-sonnet-20240229-v1:0`
-    - `anthropic.claude-3-haiku-20240307-v1:0`
+  - `modelRegion` で利用可能な Claude、Nova、Llama の vision model を指定します。
+  - 東京リージョンでコストを抑える例: `amazon.nova-lite-v1:0`
+  - Claude Haiku 4.5 は直接のオンデマンド呼び出しではなく、日本地域の推論プロファイル
+    `jp.anthropic.claude-haiku-4-5-20251001-v1:0` を指定します。処理先は東京または大阪です。
 
 **[parameter.ts](/packages/cdk/parameter.ts) を編集**
 
@@ -271,11 +289,14 @@ npx -w packages/cdk cdk bootstrap --region us-east-1
 const envs: Record<string, Partial<StackInput>> = {
   dev: {
     ragKnowledgeBaseEnabled: true,
-    ragKnowledgeBaseId: 'XXXXXXXXXX',
+    ragKnowledgeBaseId: null,
+    ragKnowledgeBaseVectorStoreType: 'S3_VECTORS',
+    ragKnowledgeBaseSearchType: 'SEMANTIC',
+    ragKnowledgeBaseDeployDefaultDocuments: false,
     ragKnowledgeBaseStandbyReplicas: false,
     ragKnowledgeBaseAdvancedParsing: true,
     ragKnowledgeBaseAdvancedParsingModelId:
-      'anthropic.claude-3-sonnet-20240229-v1:0',
+      'jp.anthropic.claude-haiku-4-5-20251001-v1:0',
     ragKnowledgeBaseBinaryVector: false,
     embeddingModelId: 'amazon.titan-embed-text-v2:0',
   },
@@ -289,10 +310,13 @@ const envs: Record<string, Partial<StackInput>> = {
 {
   "context": {
     "ragKnowledgeBaseEnabled": true,
-    "ragKnowledgeBaseId": "XXXXXXXXXX",
+    "ragKnowledgeBaseId": null,
+    "ragKnowledgeBaseVectorStoreType": "S3_VECTORS",
+    "ragKnowledgeBaseSearchType": "SEMANTIC",
+    "ragKnowledgeBaseDeployDefaultDocuments": false,
     "ragKnowledgeBaseStandbyReplicas": false,
     "ragKnowledgeBaseAdvancedParsing": true,
-    "ragKnowledgeBaseAdvancedParsingModelId": "anthropic.claude-3-sonnet-20240229-v1:0",
+    "ragKnowledgeBaseAdvancedParsingModelId": "jp.anthropic.claude-haiku-4-5-20251001-v1:0",
     "ragKnowledgeBaseBinaryVector": false,
     "embeddingModelId": "amazon.titan-embed-text-v2:0"
   }
@@ -302,7 +326,7 @@ const envs: Record<string, Partial<StackInput>> = {
 #### チャンク戦略を変更
 
 [rag-knowledge-base-stack.ts](/packages/cdk/lib/rag-knowledge-base-stack.ts) に chunkingConfiguration を指定する箇所があります。
-コメントアウトを外して、[CDK ドキュメント](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_bedrock.CfnDataSource.ChunkingConfigurationProperty.html)や [CloudFormation ドキュメント](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-chunking-parsing.html)を参考に任意のチャンク戦略へ変更が可能です。
+Advanced Parsing では、図表説明のラベルと値が分断されないよう、固定長1500トークン・20%オーバーラップを使用します。[CDK ドキュメント](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_bedrock.CfnDataSource.ChunkingConfigurationProperty.html)や [CloudFormation ドキュメント](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-chunking-parsing.html)を参考に値や戦略を変更できます。
 
 例えば、セマンティックチャンクに変更する場合は、コメントアウトをはずして以下のように指定します。
 

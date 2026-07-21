@@ -224,6 +224,8 @@ $output_format_instructions$`;
             generationConfiguration,
             retrievalConfiguration: {
               vectorSearchConfiguration: {
+                overrideSearchType: (process.env.KNOWLEDGE_BASE_SEARCH_TYPE ??
+                  'HYBRID') as 'HYBRID' | 'SEMANTIC',
                 filter: explicitFilters,
                 implicitFilterConfiguration: getImplicitFilters(),
                 rerankingConfiguration: getRerankingConfig(),

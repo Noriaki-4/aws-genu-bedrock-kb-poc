@@ -121,6 +121,11 @@ const baseStackInputSchema = z.object({
   // RAG KB
   ragKnowledgeBaseEnabled: z.boolean().default(false),
   ragKnowledgeBaseId: z.string().nullish(),
+  ragKnowledgeBaseVectorStoreType: z
+    .enum(['OPENSEARCH_SERVERLESS', 'S3_VECTORS'])
+    .default('OPENSEARCH_SERVERLESS'),
+  ragKnowledgeBaseSearchType: z.enum(['HYBRID', 'SEMANTIC']).default('HYBRID'),
+  ragKnowledgeBaseDeployDefaultDocuments: z.boolean().default(true),
   embeddingModelId: z.string().default('amazon.titan-embed-text-v2:0'),
   ragKnowledgeBaseStandbyReplicas: z.boolean().default(false),
   ragKnowledgeBaseAdvancedParsing: z.boolean().default(false),
@@ -282,6 +287,24 @@ export const stackInputSchema = baseStackInputSchema
       message:
         'sqlTemplateBucketName and sqlTemplateBucketRegion are required when sqlTemplateAssistantEnabled is true',
       path: ['sqlTemplateAssistantEnabled'],
+    }
+  )
+  .refine(
+    (data) =>
+      data.ragKnowledgeBaseVectorStoreType !== 'S3_VECTORS' ||
+      data.ragKnowledgeBaseSearchType === 'SEMANTIC',
+    {
+      message: 'S3 Vectors requires ragKnowledgeBaseSearchType SEMANTIC',
+      path: ['ragKnowledgeBaseSearchType'],
+    }
+  )
+  .refine(
+    (data) =>
+      data.ragKnowledgeBaseVectorStoreType !== 'S3_VECTORS' ||
+      !data.ragKnowledgeBaseBinaryVector,
+    {
+      message: 'S3 Vectors does not support binary vector embeddings',
+      path: ['ragKnowledgeBaseBinaryVector'],
     }
   );
 
