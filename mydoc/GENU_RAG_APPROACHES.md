@@ -435,6 +435,14 @@ if (envs[params.env]) {
 | 元ドキュメント                    | `s3://mpoc1-agentcore-kb-035351467732-ap-northeast-1-an/sample-manual.md` | 両方の KB が参照                                          |
 | OpenSearch Serverless             | **なし**                                                                  | **常時課金は発生していない**                              |
 
+2026-07-21に評価用PDF内のPNGとPDF配置枠の縦横比を一致させ、文字サイズを変更せずに
+横方向約17.4%の圧縮を解消した。ingestion job `VP86QYG8ID` は更新1文書・失敗0件で完了し、
+画像内のラック状態と凡例「正常・注意・高温」を正しく抽出できることを確認した。
+
+なお、BedrockのページメタデータはこのPDFでは0始まりだが、現行GenUはその値を出典表示と
+`#page=`へそのまま使用している。検索結果は正しいページのチャンクを取得しているものの、
+表示とリンクは1ページ前になるため、別途補正が必要である。
+
 ## 9. 未検証の論点
 
 1. **OpenSearch Serverless の実コスト。** `standbyReplicas: false` での最低 OCU 数と月額を確定させたい
