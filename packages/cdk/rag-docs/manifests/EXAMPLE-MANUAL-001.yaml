@@ -1,0 +1,36 @@
+# Document manifest for the RAG document split tool.
+# One manifest describes one original document. See
+# mydoc/GENU_RAG_METADATA_DEFINITION.md for the meaning of every attribute.
+#
+#   npx ts-node tools/rag-docs/cli/split.ts \
+#     --manifest rag-docs/manifests/EXAMPLE-MANUAL-001.yaml \
+#     --input /path/to/original.pdf \
+#     --out-dir /tmp/rag-parts/EXAMPLE-MANUAL-001
+#
+# metadata_schema_version and content_hash are filled in by the tool.
+# Conditional attributes are omitted entirely instead of being set to null.
+document:
+  document_id: EXAMPLE-MANUAL-001
+  document_title: Example Operations Manual
+  document_type: MANUAL
+  language: ja
+  version: '1.0'
+  status: ACTIVE
+  effective_from: 20260701
+  effective_to: 99991231
+  owner_organization_id: ORG_A
+  owner_department_id: IT_OPERATIONS
+  allowed_group_ids:
+    - org:ORG_A
+  allowed_role_ids:
+    - ANY_ROLE
+
+split:
+  # Pages per split file. --pages-per-part overrides this value.
+  pages_per_part: 50
+  # Optional explicit ranges. They must cover every page exactly once.
+  # ranges:
+  #   - start_page: 1
+  #     end_page: 40
+  #   - start_page: 41
+  #     end_page: 120

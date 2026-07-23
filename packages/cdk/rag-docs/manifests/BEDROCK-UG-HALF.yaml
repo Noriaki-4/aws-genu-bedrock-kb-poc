@@ -1,0 +1,32 @@
+# Verification document for the split ingestion flow.
+# The source is the first 141 pages of rag-docs/docs/bedrock-ug.pdf, cut right
+# before the "Provisioned Throughput" chapter that starts on page 142.
+#
+# The ranges below follow the chapter boundaries of the PDF outline:
+#   part 1  p1-p55    up to the end of "Using the Amazon Bedrock API"
+#   part 2  p56-p116  up to the end of "Prompt engineering guidelines"
+#   part 3  p117-p141 "Embeddings" and "Custom models"
+document:
+  document_id: BEDROCK-UG-HALF
+  document_title: Amazon Bedrock User Guide (first half)
+  document_type: MANUAL
+  language: ja
+  version: '1.0'
+  status: ACTIVE
+  effective_from: 20260101
+  effective_to: 99991231
+  owner_organization_id: ORG_A
+  owner_department_id: IT_OPERATIONS
+  allowed_group_ids:
+    - org:ORG_A
+  allowed_role_ids:
+    - ANY_ROLE
+  original_file_name: bedrock-ug-half.pdf
+
+split:
+  # The jp. inference profile is a cross-region call, which is capped at 10
+  # requests per minute for Haiku 4.5. The foundation model parser spends one
+  # request per page, so a part must stay small enough that one ingestion job
+  # does not exceed the per-minute request quota. 8 pages per part leaves head
+  # room while the ingest CLI keeps at least 60 seconds between jobs.
+  pages_per_part: 8
