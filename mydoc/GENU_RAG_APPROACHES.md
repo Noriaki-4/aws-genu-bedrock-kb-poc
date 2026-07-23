@@ -3,6 +3,10 @@
 GenU (generative-ai-use-cases) から Bedrock Knowledge Base を参照する方式を、
 実機検証した結果とともに整理する。
 
+PDF高度解析で発生した問題、原因、修正、再発防止は
+[GENU_KB_PDF_ADVANCED_PARSING_TROUBLESHOOTING.md](./GENU_KB_PDF_ADVANCED_PARSING_TROUBLESHOOTING.md)
+を参照する。
+
 | 前提                    | 値                            |
 | ----------------------- | ----------------------------- |
 | GenU バージョン         | v5.4.0                        |
