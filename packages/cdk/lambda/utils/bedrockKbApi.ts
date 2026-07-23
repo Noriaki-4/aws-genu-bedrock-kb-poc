@@ -24,8 +24,11 @@ import { streamingChunk } from './streamingChunk';
 import { verifyToken } from './auth';
 import { initBedrockAgentRuntimeClient } from './bedrockClient';
 import {
+  BedrockKbReferenceTarget,
   buildBedrockKbReferenceTarget,
+  buildBedrockKbSnippet,
   formatBedrockKbFootnote,
+  resolveBedrockKbDocumentLabel,
 } from './bedrockKbCitation';
 
 const MODEL_REGION = process.env.MODEL_REGION as string;
@@ -81,9 +84,7 @@ const resolveSourceUrl = (ref: RetrievedReference): string | undefined => {
 
 // Resolve display title from a retrieved reference
 const resolveDisplayTitle = (ref: RetrievedReference, url: string): string => {
-  const metadataTitle =
-    (ref?.metadata?.['title'] as string | undefined) ||
-    (ref?.metadata?.['x-amz-bedrock-kb-document-title'] as string | undefined);
+  const metadataTitle = resolveBedrockKbDocumentLabel(ref);
   if (metadataTitle) return metadataTitle;
 
   const isWebSource = !ref?.location?.s3Location?.uri;
@@ -241,7 +242,8 @@ $output_format_instructions$`;
           refId: number;
           ref: RetrievedReference;
           displayTitle: string;
-          pageNumber?: number;
+          target: BedrockKbReferenceTarget;
+          snippet?: string;
         };
       } = {};
 
@@ -284,7 +286,8 @@ $output_format_instructions$`;
                 refId: Object.keys(sources).length,
                 ref,
                 displayTitle: resolveDisplayTitle(ref, url),
-                pageNumber: target.pageNumber,
+                target,
+                snippet: buildBedrockKbSnippet(ref),
               };
             }
             yield streamingChunk({ text: `[^${sources[refUrl].refId}]` });
@@ -298,14 +301,15 @@ $output_format_instructions$`;
       }
 
       // Append footnote definitions
-      for (const [url, { refId, displayTitle, pageNumber }] of Object.entries(
+      for (const { refId, displayTitle, target, snippet } of Object.values(
         sources
       )) {
         yield streamingChunk({
           text: formatBedrockKbFootnote({
             refId,
             displayTitle,
-            target: { url, pageNumber },
+            target,
+            snippet,
           }),
         });
       }

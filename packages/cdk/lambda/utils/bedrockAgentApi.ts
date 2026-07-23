@@ -20,7 +20,11 @@ import {
   UnrecordedMessage,
   BraveSearchResult,
 } from 'generative-ai-use-cases';
-import { toOneBasedPageNumber } from '@generative-ai-use-cases/common';
+import {
+  buildBedrockKbReferenceTarget,
+  buildBedrockKbSnippet,
+  resolveBedrockKbDocumentLabel,
+} from './bedrockKbCitation';
 import { streamingChunk } from './streamingChunk';
 import { convertToSafeFilename } from './fileNameUtils';
 import {
@@ -208,23 +212,25 @@ const bedrockAgentApi: ApiInterface = {
                 process.env.MODEL_REGION || ''
               );
 
-              // Get the page number
-              const pageNumber = toOneBasedPageNumber(
-                ref?.metadata?.['x-amz-bedrock-kb-document-page-number']
-              );
-
-              // Get the file name and encode it
-              const fileName = url.split('/').pop() || '';
-              const encodedFileName = encodeUrlString(fileName);
+              // Build the citation target. A split part links to the
+              // integrated document on its original page; the label shows the
+              // original page number.
+              const target = buildBedrockKbReferenceTarget(ref, url);
+              const label =
+                resolveBedrockKbDocumentLabel(ref) ??
+                (url.split('/').pop() || '');
+              const snippet = buildBedrockKbSnippet(ref);
 
               // If the data source is unique, add Reference to the end
-              if (sources[url] === undefined) {
-                sources[url] = Object.keys(sources).length;
-                body += `\n[^${sources[url]}]: [${fileName}${
-                  pageNumber !== undefined ? `(p.${pageNumber})` : ''
-                }](${url.replace(fileName, encodedFileName)}${pageNumber !== undefined ? `#page=${pageNumber}` : ''})`;
+              if (sources[target.url] === undefined) {
+                sources[target.url] = Object.keys(sources).length;
+                body += `\n[^${sources[target.url]}]: [${label}${
+                  target.displayPageNumber !== undefined
+                    ? `(p.${target.displayPageNumber})`
+                    : ''
+                }](${target.url})${snippet ? `\n${snippet}` : ''}`;
               }
-              const referenceId = sources[url];
+              const referenceId = sources[target.url];
 
               // Add Reference to the middle of the text
               const position =
@@ -368,15 +374,16 @@ const bedrockAgentApi: ApiInterface = {
                             process.env.MODEL_REGION || ''
                           )
                         : location.url;
-                      const fileName = url.split('/').pop() || '';
-                      const encodedFileName = encodeUrlString(fileName);
-                      const pageNumber = toOneBasedPageNumber(
-                        ref?.metadata?.['x-amz-bedrock-kb-document-page-number']
-                      );
+                      const target = buildBedrockKbReferenceTarget(ref, url);
+                      const label =
+                        resolveBedrockKbDocumentLabel(ref) ??
+                        (url.split('/').pop() || '');
 
-                      return `- [${fileName}${
-                        pageNumber !== undefined ? `(p.${pageNumber})` : ''
-                      }](${url.replace(fileName, encodedFileName)}${pageNumber !== undefined ? `#page=${pageNumber}` : ''})`;
+                      return `- [${label}${
+                        target.displayPageNumber !== undefined
+                          ? `(p.${target.displayPageNumber})`
+                          : ''
+                      }](${target.url})`;
                     }
                     return [];
                   }
